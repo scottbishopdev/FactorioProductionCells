@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+    postgres:
+        container_name: "postgres_container"
+        image: "postgres"
+        env_file:
+            - "./config/postgres.env"
+        ports:
+            - "5432:5432"
+        volumes:
+            - "postgres-data:/var/lib/postgresql/data"
+            - "./postgres/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql" # SQL script to create the initial schema for the database.
+
+    pgadmin:
+        container_name: "pgadmin_container"
+        image: "dpage/pgadmin4"
+        depends_on:
+            - "postgres"
+        env_file:
+            - "./config/pgadmin/pgadmin.env"
+        ports:
+            - "11111:80"
+        volumes:
+            - "./config/pgadmin/servers.json:/pgadmin4/servers.json" # JSON file telling pgAdmin what servers to connect to
+            
+volumes:
+    postgres-data:
