@@ -2,27 +2,42 @@ version: "3"
 
 services:
     postgres:
-        container_name: "postgres_container"
+        container_name: "postgres"
         image: "postgres"
-        env_file:
-            - "./config/postgres.env"
+        environment:
+            - POSTGRES_DB
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
         ports:
-            - "5432:5432"
+            - "${POSTGRES_PORT}:5432"
         volumes:
             - "postgres-data:/var/lib/postgresql/data"
-            - "./postgres/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql" # SQL script to create the initial schema for the database.
 
     pgadmin:
-        container_name: "pgadmin_container"
+        container_name: "pgadmin"
         image: "dpage/pgadmin4"
         depends_on:
             - "postgres"
-        env_file:
-            - "./config/pgadmin/pgadmin.env"
+        environment:
+            - PGADMIN_DEFAULT_EMAIL
+            - PGADMIN_DEFAULT_PASSWORD
         ports:
-            - "11111:80"
+            - "${PGADMIN_PORT}:80"
         volumes:
             - "./config/pgadmin/servers.json:/pgadmin4/servers.json" # JSON file telling pgAdmin what servers to connect to
             
+    fluent-migrator:
+        container_name: "fluent-migrator"
+        build: ./PostgresMigrator
+        network_mode: "host"
+        depends_on:
+            - "postgres"
+        environment:
+            - POSTGRES_PORT
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+            - POSTGRES_DB
+            - POSTGRES_CONNECTION_STRING=Server=localhost;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
+
 volumes:
     postgres-data:
