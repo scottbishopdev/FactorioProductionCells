@@ -29,7 +29,7 @@ POSTGRES_PORT=
 # pgAdmin4 variables
 PGADMIN_DEFAULT_EMAIL=
 PGADMIN_DEFAULT_PASSWORD=
-PGADMIN_PORT=11111
+PGADMIN_PORT=
 ```
 
 You'll need to configure each of these environment variables before running the website. Here's what each of them do:
