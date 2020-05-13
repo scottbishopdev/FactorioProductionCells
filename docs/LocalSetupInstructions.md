@@ -41,6 +41,29 @@ You'll need to configure each of these environment variables before running the 
 * **PGADMIN_DEFAULT_PASSWORD -** The password for the default user for pgAdmin. Again, use a strong password.
 * **PGADMIN_PORT -** The port that pgAdmin will listen on. This can be any valid port that's unused on the host.
 
+## Configuring servers.json for pgAdmin
+pgAdmin uses a file called `servers.json` to define which databases it should connect to when it starts up. If you'd like pgAdmin to connect to postgres automatically instead of doing so manually, you'll need to create your own `servers.json` file at `./config/pgadmin/server.json`. You can read more about the format for the file [here](https://www.pgadmin.org/docs/pgadmin4/development/import_export_servers.html).
+
+Here's an example of what your `servers.json` file might look like. Keep in mind that some of these values should match values that you set in the `.env` file.
+
+``` json
+{
+    "Servers": {
+        "1": {
+            "Name": <POSTGRES_DB from .env file>,
+            "Group": "Servers",
+            "Port": <POSTGRES_PORT from .env file>,
+            "Username": <POSTGRES_USER from .env file>,
+            "Host": "postgres",
+            "SSLMode": "prefer",
+            "MaintenanceDB": "postgres"
+        }
+    }
+}
+```
+**Note:** You'll still need to enter the database's password manually on connection, but the server will appear in pgAdmin's server list.
+
+
 ## Starting Things Up
 After configuring the .env file, you should be good to go! Go back to your command line (in the root of the repository) and run the following commands:
 ``` bash
