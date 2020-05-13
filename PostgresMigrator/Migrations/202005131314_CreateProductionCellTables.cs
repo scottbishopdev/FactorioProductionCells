@@ -17,10 +17,11 @@ namespace Migrations
 
             Create.Table("production_cell_recipe")
                 .WithColumn("id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
-                .WithColumn("production_cell_id").AsGuid().NotNullable().PrimaryKey().ForeignKey("production_cell", "id")
+                .WithColumn("production_cell_id").AsGuid().NotNullable().ForeignKey("production_cell", "id")
                 .WithColumn("recipe_id").AsGuid().NotNullable().ForeignKey("recipe", "id")
                 .WithColumn("machine_id").AsGuid().NotNullable().ForeignKey("machine", "id")
                 .WithColumn("quantity").AsInt32().NotNullable()
+                .WithColumn("sequence").AsInt32().NotNullable()
                 .WithColumn("add_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("update_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
 
