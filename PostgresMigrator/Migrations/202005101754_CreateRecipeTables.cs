@@ -7,7 +7,6 @@ namespace Migrations
     {
         public override void  Up()
         {
-            // Item Tables
             Create.Table("recipe")
                 .WithColumn("id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
                 .WithColumn("name").AsString(200).NotNullable()
@@ -41,7 +40,6 @@ namespace Migrations
 
         public override void Down()
         {
-            // Item Tables
             Delete.Table("recipe_valid_machines");
             Delete.Table("recipe_product");
             Delete.Table("recipe_ingredient");

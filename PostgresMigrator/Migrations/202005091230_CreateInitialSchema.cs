@@ -10,7 +10,6 @@ namespace Migrations
             IfDatabase("Postgres")
                 .Execute.Sql("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
 
-            // System Tables
             Create.Table("language")
                 .WithColumn("id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
                 .WithColumn("english_name").AsString(50).NotNullable()
@@ -24,7 +23,6 @@ namespace Migrations
                 .WithColumn("add_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("update_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
 
-            // Item Tables
             Create.Table("item")
                 .WithColumn("id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
                 .WithColumn("name").AsString(200).NotNullable()
@@ -39,11 +37,9 @@ namespace Migrations
 
         public override void Down()
         {
-            // Item Tables
             Delete.Table("item_translation");
             Delete.Table("item");
             
-            // System Tables
             Delete.Table("language");
             Delete.Table("user_account");
 
