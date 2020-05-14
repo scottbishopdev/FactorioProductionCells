@@ -39,7 +39,7 @@ services:
             - POSTGRES_PASSWORD
             - POSTGRES_DB
             - POSTGRES_CONNECTION_STRING=Server=localhost;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
-        restart: "on-failure:3"
+        restart: "on-failure:5"
 
 volumes:
     postgres-data:
