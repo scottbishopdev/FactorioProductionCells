@@ -7,12 +7,12 @@ namespace Migrations
     {
         public override void  Up()
         {
-            Create.UniqueConstraint().OnTable("item").Column("name");
+            Create.UniqueConstraint().OnTable("Item").Column("Name");
         }
 
         public override void Down()
         {
-            Delete.UniqueConstraint().FromTable("item").Column("name");
+            Delete.UniqueConstraint().FromTable("Item").Column("Name");
         }
     }
 }

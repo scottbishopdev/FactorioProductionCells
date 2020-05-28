@@ -7,24 +7,24 @@ namespace Migrations
     {
         public override void  Up()
         {
-            Create.Table("module")
-                .WithColumn("id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
-                .WithColumn("name").AsString(200).NotNullable()
-                .WithColumn("productivity_bonus").AsDouble().NotNullable()
-                .WithColumn("speed_bonus").AsDouble().NotNullable()
-                .WithColumn("add_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
+            Create.Table("Module")
+                .WithColumn("Id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
+                .WithColumn("Name").AsString(200).NotNullable()
+                .WithColumn("ProductivityBonus").AsDouble().NotNullable()
+                .WithColumn("SpeedBonus").AsDouble().NotNullable()
+                .WithColumn("AddDate").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
 
-            Create.Table("module_translation")
-                .WithColumn("module_id").AsGuid().NotNullable().PrimaryKey().ForeignKey("module", "id")
-                .WithColumn("language_id").AsGuid().NotNullable().PrimaryKey().ForeignKey("language", "id")
-                .WithColumn("display_name").AsString().NotNullable()
-                .WithColumn("add_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
+            Create.Table("ModuleTranslation")
+                .WithColumn("ModuleId").AsGuid().NotNullable().PrimaryKey().ForeignKey("Module", "Id")
+                .WithColumn("LanguageId").AsGuid().NotNullable().PrimaryKey().ForeignKey("Language", "Id")
+                .WithColumn("DisplayName").AsString().NotNullable()
+                .WithColumn("AddDate").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
         }
 
         public override void Down()
         {
-            Delete.Table("module_translation");
-            Delete.Table("module");
+            Delete.Table("ModuleTranslation");
+            Delete.Table("Module");
         }
     }
 }

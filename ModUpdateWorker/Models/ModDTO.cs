@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace ModFetcher
+namespace ModUpdateWorker
 {
-    public class Mod
+    public class ModDTO
     {
         public String Name { get; set; }
         public String Title { get; set; }
         public String Owner { get; set; }
         public String Summary { get; set; }
         public Int32 Downloads_Count { get; set; }
-        public List<Release> Releases { get; set; }
+        public List<ReleaseDTO> Releases { get; set; }
         public String Thumbnail { get; set; }
 
         public void PrintMod()

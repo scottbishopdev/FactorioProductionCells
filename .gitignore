@@ -5,4 +5,5 @@ config/*
 *bin/
 *obj/
 *TestResults/
-PostgresMigrator/output
+launchsettings.json
+appsettings*.json

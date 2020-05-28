@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace ModFetcher
+namespace ModUpdateWorker
 {
-    public class Release
+    public class ReleaseDTO
     {
         public String Download_URL { get; set; }
         
@@ -11,7 +11,7 @@ namespace ModFetcher
 
         public DateTime Released_At { get; set; }
 
-        public ReleaseInfo Info_Json { get; set; }
+        public ReleaseInfoDTO Info_Json { get; set; }
 
         public String Version { get; set; }
 
@@ -32,12 +32,5 @@ namespace ModFetcher
                 Console.WriteLine($"        {d}");
             }
         }
-    }
-
-    public class ReleaseInfo
-    {
-        public String Factorio_Version { get; set; }
-        
-        public List<String> Dependencies { get; set; }
     }
 }

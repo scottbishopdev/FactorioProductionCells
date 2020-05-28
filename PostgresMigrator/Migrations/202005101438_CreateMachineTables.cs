@@ -7,24 +7,24 @@ namespace Migrations
     {
         public override void  Up()
         {
-            Create.Table("machine")
-                .WithColumn("id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
-                .WithColumn("name").AsString(200).NotNullable()
-                .WithColumn("crafting_speed").AsDouble().NotNullable()
-                .WithColumn("module_slots").AsInt32().NotNullable()
-                .WithColumn("add_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
+            Create.Table("Machine")
+                .WithColumn("Id").AsGuid().NotNullable().PrimaryKey().WithDefaultValue(SystemMethods.NewGuid)
+                .WithColumn("Name").AsString(200).NotNullable()
+                .WithColumn("CraftingSpeed").AsDouble().NotNullable()
+                .WithColumn("ModuleSlots").AsInt32().NotNullable()
+                .WithColumn("AddDate").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
 
-            Create.Table("machine_translation")
-                .WithColumn("machine_id").AsGuid().NotNullable().PrimaryKey().ForeignKey("machine", "id")
-                .WithColumn("language_id").AsGuid().NotNullable().PrimaryKey().ForeignKey("language", "id")
-                .WithColumn("display_name").AsString().NotNullable()
-                .WithColumn("add_date").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
+            Create.Table("MachineTranslation")
+                .WithColumn("MachineId").AsGuid().NotNullable().PrimaryKey().ForeignKey("Machine", "Id")
+                .WithColumn("LanguageId").AsGuid().NotNullable().PrimaryKey().ForeignKey("Language", "Id")
+                .WithColumn("DisplayName").AsString().NotNullable()
+                .WithColumn("AddDate").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
         }
 
         public override void Down()
         {
-            Delete.Table("machine_translation");
-            Delete.Table("machine");
+            Delete.Table("MachineTranslation");
+            Delete.Table("Machine");
         }
     }
 }

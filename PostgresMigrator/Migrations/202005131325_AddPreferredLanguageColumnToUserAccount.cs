@@ -7,13 +7,13 @@ namespace Migrations
     {
         public override void  Up()
         {
-            Alter.Table("user_account")
-                .AddColumn("preferred_language").AsGuid().ForeignKey("language", "id");
+            Alter.Table("UserAccount")
+                .AddColumn("PreferredLanguage").AsGuid().ForeignKey("Language", "Id");
         }
 
         public override void Down()
         {
-            Delete.Column("preferred_language").FromTable("user_account");
+            Delete.Column("PreferredLanguage").FromTable("UserAccount");
         }
     }
 }

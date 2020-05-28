@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ModFetcher\ModFetcher.csproj" />
+    <ProjectReference Include="..\ModUpdateWorker\ModUpdateWorker.csproj" />
   </ItemGroup>
 
 </Project>
