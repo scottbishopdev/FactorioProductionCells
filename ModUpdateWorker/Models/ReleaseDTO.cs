@@ -1,17 +1,16 @@
 using System;
-using System.Collections.Generic;
 
 namespace ModUpdateWorker
 {
     public class ReleaseDTO
     {
-        public String Download_URL { get; set; }
+        public String DownloadURL { get; set; }
         
-        public String File_Name { get; set; }
+        public String FileName { get; set; }
 
-        public DateTime Released_At { get; set; }
+        public DateTime ReleasedAt { get; set; }
 
-        public ReleaseInfoDTO Info_Json { get; set; }
+        public ReleaseInfoDTO InfoJson { get; set; }
 
         public String Version { get; set; }
 
@@ -20,14 +19,14 @@ namespace ModUpdateWorker
         public void PrintRelease()
         {
             Console.WriteLine($"Mod.Releases.Version: {this.Version}");
-            Console.WriteLine($"    Mod.Releases.Download_URL: {this.Download_URL}");
-            Console.WriteLine($"    Mod.Releases.File_Name: {this.File_Name}");
-            Console.WriteLine($"    Mod.Releases.Released_At: {this.Released_At}");
+            Console.WriteLine($"    Mod.Releases.Download_URL: {this.DownloadURL}");
+            Console.WriteLine($"    Mod.Releases.File_Name: {this.FileName}");
+            Console.WriteLine($"    Mod.Releases.Released_At: {this.ReleasedAt}");
             Console.WriteLine($"    Mod.Releases.Sha1: {this.Sha1}");
-            Console.WriteLine($"    Mod.Releases.Info_Json.Factorio_Version: {this.Info_Json.Factorio_Version}");
+            Console.WriteLine($"    Mod.Releases.Info_Json.Factorio_Version: {this.InfoJson.FactorioVersion}");
             Console.WriteLine($"    Mod.Releases.Info_Json.Dependencies:");
 
-            foreach(String d in this.Info_Json.Dependencies)
+            foreach(String d in this.InfoJson.Dependencies)
             {
                 Console.WriteLine($"        {d}");
             }

@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 
 namespace FRCDataAccessLibrary
 {
-    public class ModTranslation
+    public class ModTitle
     {
         public Guid ModId { get; set; }
         public Mod Mod { get; set; }

@@ -12,47 +12,10 @@ namespace ModUpdateScheduler
     {
         public static void Main(string[] args)
         {
-            
-            
             CreateHostBuilder(args)
                 .Build()
                 .MigrateDatabase<ModContext>()
                 .Run();
-            
-            /*
-            IHost host = CreateHostBuilder(args).Build();
-
-            if(MigrateDatabase<ModContext>(host))
-            {
-                host.Run();
-            }
-            else
-            {
-                return;
-            }
-            */
-
-            /*
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                // TODO: Implement check for current database version, targeted database version, and logging to indicate whether or not we're attempting a migration.
-                try
-                {
-                    var db = services.GetRequiredService<ModContext>();
-                    db.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, $"An error occurred while performing migration of the database context {typeof(ModContext).FullName}. ");
-                    return;
-                }
-            }
-
-            host.Run();
-            */
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -74,108 +37,7 @@ namespace ModUpdateScheduler
                         );
                     });
                     services.AddHostedService<Worker>();
+                    //services.
                 });
-
-
-        /*
-        public Boolean MigrateDatabase<T>(IHost host) where T : DbContext
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                // TODO: Implement check for current database version, targeted database version, and logging to indicate whether or not we're attempting a migration.
-                try
-                {
-                    var db = services.GetRequiredService<T>();
-                    db.Database.Migrate();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, $"An error occurred while performing migration of the database context {typeof(T).FullName}. ");
-                    return false;
-                }
-            }
-
-            //return webHost;
-        }
-        */
-
-        /*
-        public static Boolean MigrateDatabase<T>(this IWebHost webHost) where T : DbContext
-        {
-            using (var scope = webHost.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                // TODO: Implement check for current database version, targeted database version, and logging to indicate whether or not we're attempting a migration.
-                try
-                {
-                    var db = services.GetRequiredService<T>();
-                    db.Database.Migrate();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, $"An error occurred while performing migration of the database context {typeof(T).FullName}. ");
-                    return false;
-                }
-            }
-
-            //return webHost;
-        }
-        */
-
-        /*
-        public static IHost MigrateDatabase<T>(this IHost host) where T : DbContext
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var db = services.GetRequiredService<T>();
-                    db.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while migrating the database.");
-                }
-            }
-            return host;
-        }
-        */
-
-
-
-
-
-        /*
-        public static IHost MigrateDatabase<T>(this IHost host) where T : DbContext
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                // TODO: Implement check for current database version, targeted database version, and logging to indicate whether or not we're attempting a migration.
-                try
-                {
-                    var db = services.GetRequiredService<T>();
-                    db.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, $"An error occurred while performing migration of the database context {typeof(T).FullName}. ");
-                }
-            }
-
-            return host;
-        }
-        */
     }
 }

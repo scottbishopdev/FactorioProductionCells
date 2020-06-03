@@ -44,14 +44,14 @@ namespace ModUpdateWorker.Tests
             Assert.NotNull(bobsLibraryMod.Thumbnail);
             
             Assert.NotEmpty(bobsLibraryMod.Releases);
-            Assert.NotNull(bobsLibraryMod.Releases[0].Download_URL);
-            Assert.NotNull(bobsLibraryMod.Releases[0].File_Name);
+            Assert.NotNull(bobsLibraryMod.Releases[0].DownloadURL);
+            Assert.NotNull(bobsLibraryMod.Releases[0].FileName);
             //Assert.NotNull(bobsLibraryMod.Releases[0].Released_At);
             Assert.NotNull(bobsLibraryMod.Releases[0].Version);
             Assert.NotNull(bobsLibraryMod.Releases[0].Sha1);
 
-            Assert.NotNull(bobsLibraryMod.Releases[0].Info_Json.Factorio_Version);
-            Assert.NotEmpty(bobsLibraryMod.Releases[0].Info_Json.Dependencies);
+            Assert.NotNull(bobsLibraryMod.Releases[0].InfoJson.FactorioVersion);
+            Assert.NotEmpty(bobsLibraryMod.Releases[0].InfoJson.Dependencies);
         }
 
         [Fact]

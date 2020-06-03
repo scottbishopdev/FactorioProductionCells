@@ -13,7 +13,7 @@ namespace Migrations
                 .WithColumn("AddDate").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("UpdateDate").AsDateTimeOffset().NotNullable().WithDefaultValue(SystemMethods.CurrentDateTime);
 
-            Create.Table("ModTranslation")
+            Create.Table("ModTitle")
                 .WithColumn("ModId").AsGuid().NotNullable().PrimaryKey().ForeignKey("Mod", "Id")
                 .WithColumn("LanguageId").AsGuid().NotNullable().PrimaryKey().ForeignKey("Language", "Id")
                 .WithColumn("Title").AsString().NotNullable()
@@ -30,7 +30,7 @@ namespace Migrations
         public override void Down()
         {
             Delete.Table("ModRelease");
-            Delete.Table("ModTranslation");
+            Delete.Table("ModTitle");
             Delete.Table("Mod");
         }
     }

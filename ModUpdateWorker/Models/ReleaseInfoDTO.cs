@@ -5,7 +5,7 @@ namespace ModUpdateWorker
 {
     public class ReleaseInfoDTO
     {
-        public String Factorio_Version { get; set; }
+        public String FactorioVersion { get; set; }
         
         public List<String> Dependencies { get; set; }
     }

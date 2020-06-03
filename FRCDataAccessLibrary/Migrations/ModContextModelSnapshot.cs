@@ -75,7 +75,7 @@ namespace FRCDataAccessLibrary.Migrations
                     b.ToTable("Mods");
                 });
 
-            modelBuilder.Entity("FRCDataAccessLibrary.ModTranslation", b =>
+            modelBuilder.Entity("FRCDataAccessLibrary.ModTitle", b =>
                 {
                     b.Property<Guid>("ModId")
                         .HasColumnType("uuid");
@@ -97,7 +97,7 @@ namespace FRCDataAccessLibrary.Migrations
 
                     b.HasIndex("LanguageId");
 
-                    b.ToTable("ModTranslations");
+                    b.ToTable("ModTitles");
                 });
 
             modelBuilder.Entity("FRCDataAccessLibrary.Release", b =>
@@ -127,7 +127,7 @@ namespace FRCDataAccessLibrary.Migrations
                     b.ToTable("Releases");
                 });
 
-            modelBuilder.Entity("FRCDataAccessLibrary.ModTranslation", b =>
+            modelBuilder.Entity("FRCDataAccessLibrary.ModTitle", b =>
                 {
                     b.HasOne("FRCDataAccessLibrary.Language", "Language")
                         .WithMany()

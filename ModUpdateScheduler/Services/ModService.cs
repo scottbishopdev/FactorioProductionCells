@@ -4,12 +4,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ModUpdateScheduler
 {
-    public class ModService
+    public interface IModService
+    {
+        Task<List<ModDTO>> GetAllMods();
+    }
+    
+    public class ModService : IModService
     {
         // TODO: Implement logging. Previously had issues figuring out dependency injection.
         private const String modPortalUrl = "https://mods.factorio.com/api/";

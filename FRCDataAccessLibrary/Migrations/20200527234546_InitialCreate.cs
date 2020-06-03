@@ -44,7 +44,7 @@ namespace FRCDataAccessLibrary.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ModTranslations",
+                name: "ModTitles",
                 schema: "public",
                 columns: table => new
                 {
@@ -55,16 +55,16 @@ namespace FRCDataAccessLibrary.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ModTranslations", x => new { x.ModId, x.LanguageId });
+                    table.PrimaryKey("PK_ModTitles", x => new { x.ModId, x.LanguageId });
                     table.ForeignKey(
-                        name: "FK_ModTranslations_Languages_LanguageId",
+                        name: "FK_ModTitles_Languages_LanguageId",
                         column: x => x.LanguageId,
                         principalSchema: "public",
                         principalTable: "Languages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ModTranslations_Mods_ModId",
+                        name: "FK_ModTitles_Mods_ModId",
                         column: x => x.ModId,
                         principalSchema: "public",
                         principalTable: "Mods",
@@ -95,9 +95,9 @@ namespace FRCDataAccessLibrary.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModTranslations_LanguageId",
+                name: "IX_ModTitles_LanguageId",
                 schema: "public",
-                table: "ModTranslations",
+                table: "ModTitles",
                 column: "LanguageId");
 
             migrationBuilder.CreateIndex(
@@ -110,7 +110,7 @@ namespace FRCDataAccessLibrary.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ModTranslations",
+                name: "ModTitles",
                 schema: "public");
 
             migrationBuilder.DropTable(

@@ -9,7 +9,7 @@ namespace FRCDataAccessLibrary
         public String Name { get; set; }
         public DateTime AddDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public List<Release> Releases { get; set; } = new List<Release>();
-        public List<ModTranslation> Titles { get; set; } = new List<ModTranslation>();
+        public IList<Release> Releases { get; private set; } = new List<Release>();
+        public IList<ModTitle> Titles { get; private set; } = new List<ModTitle>();
     }
 }

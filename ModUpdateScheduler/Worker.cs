@@ -20,7 +20,8 @@ namespace ModUpdateScheduler
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
         private HttpClient _httpClient;
-        private ModService _modService;
+        private IModService _modService;
+        
 
         public Worker(
             ILogger<Worker> logger,
@@ -37,14 +38,14 @@ namespace ModUpdateScheduler
             _httpClient = new HttpClient();
             _modService = new ModService(_httpClient);
 
-            /*
+            
             // Hostname will probably have top change here.
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory() { HostName = "RabbitMQ" };
             using (var connection = factory.CreateConnection())
             {
                 using (var channel = connection.CreateModel())
                 {
-                    // This statement declared (and creates?) a queue with the name startUpdate. We should do this in both clients and producers, as we can't be sure which will start first.
+                    // This statement declares (and creates?) a queue with the name startUpdate. We should do this in both clients and producers, as we can't be sure which will start first.
                     channel.QueueDeclare(queue: "startUpdate",
                                          durable: false,
                                          exclusive: false,
@@ -71,51 +72,45 @@ namespace ModUpdateScheduler
                     Console.ReadLine();
                 }
             }
-            */
-
-            // Is this where I should tie into FluentMigrator?
+            
 
             return base.StartAsync(stoppingToken);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            List<ModDTO> modList = await _modService.GetAllMods();
+            List<ModDTO> newModList = await _modService.GetAllMods();
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<ModContext>();
+                var modDb = scope.ServiceProvider.GetRequiredService<ModContext>();
 
                 int counter = 0;
-                foreach(ModDTO mod in modList)
+                foreach(ModDTO newMod in newModList)
                 {
-                    Console.WriteLine($"Looking for mod {mod.Name} in database...");
+                    _logger.LogInformation($"Searching for {newMod.Name} in database...");
 
+                    // TODO: Implement error handling for a failed DB connection.
                     try
                     {
-                        var dbMod = db.Mods
+                        var dbMod = modDb.Mods
                             .Include(mod => mod.Releases)
-                            .SingleOrDefault(m => m.Name == mod.Name);
+                            .SingleOrDefault(m => m.Name == newMod.Name);
 
-                        if(dbMod != null)
+                        if(dbMod == null)
                         {
-                            Console.WriteLine($"    Mod {mod.Name} was found and loaded:");
-                            Console.WriteLine($"    mod.id: {dbMod.Id}");
-                            Console.WriteLine($"    mod.name: {dbMod.Name}");
-                            Console.WriteLine($"    mod.add_date: {dbMod.AddDate}");
-                            Console.WriteLine($"    mod.update_date: {dbMod.UpdateDate}");
+                            // We didn't find a matching mod, so we need to add this new one to the database.
 
-                            foreach(Release dbRelease in dbMod.Releases)
-                            {
-                                Console.WriteLine($"    mod_release.version: {dbRelease.Version}");
-                                Console.WriteLine($"        mod_release.id: {dbRelease.Id}");
-                                Console.WriteLine($"        mod_release.mod_id: {dbRelease.ModId}");
-                                Console.WriteLine($"        mod_release.add_date: {dbRelease.AddDate}");
-                            }
+
+
+                        }
+                        if(dbMod.Releases.OrderBy(r => r.AddDate).Single().ReleasedAt < newMod.LatestRelease.ReleasedAt)
+                        {
+                            // We found a matching mod, but it needs to be updated.
                         }
                         else
                         {
-                            Console.WriteLine($"    Mod {mod.Name} could not be found.");
+                            // We found a matching mod and it doesn't need to be updated.
                         }
                     }
                     catch (Exception ex)
