@@ -16,16 +16,17 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
             builder.Property(l => l.LanguageCode).HasMaxLength(Language.LanguageCodeLength).IsRequired();
             builder.Property(l => l.IsDefault).IsRequired();
             // Ignored Columns
-            builder.Ignore(l => l.EnglishNameLength);
-            builder.Ignore(l => l.LanguageCodeLength);
+            // TODO: Determine if we need to ignore static properties. We can't reference them like this, but also, EF might decide it wants to store it.
+            //builder.Ignore(l => l.EnglishNameLength);
+            //builder.Ignore(l => l.LanguageCodeLength);
             // Indexes
-            builder.HasMany(l => l.ModTitles).WithOne(mt => mt.Language);
+            //builder.HasMany(l => l.ModTitles).WithOne(mt => mt.Language);
             // Constraints
             // This *should* ensure that we only have one row where IsDefault is set to true.
-            builder.HasIndex(l => new {l.Id, l.IsDefault}).IsUnique().HasFilter("[IsDefault] = 1");
+            builder.HasIndex(l => new {l.Id, l.IsDefault}).IsUnique().HasFilter("\"IsDefault\" = true");
 
             // TODO: Ensure that we're loading seed data properly.
-            builder.HasData(new Language("English", "en-US", true));
+            //builder.HasData(new Language("English", "en-US", true));
         }
     }
 }

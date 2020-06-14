@@ -7,31 +7,30 @@ using FactorioProductionCells.Domain.Exceptions;
 
 namespace FactorioProductionCells.Domain.ValueObjects
 {
-    public class FactorioVersion : ValueObject
+    public class FactorioVersion : ValueObject, IComparable
     {
-        public const string FactorioVersionStringRegex = @"^\d+\.\d+\$";
+        public const String FactorioVersionStringCapturePattern = @"^(\d+)\.(\d+)\$";
+
         private FactorioVersion() {}
 
-        public static FactorioVersion For(string versionString)
+        public static FactorioVersion For(String factorioVersionString)
         {
-            versionString = versionString?.Trim();
-            Regex factorioVersionPattern = new Regex(FactorioVersion.FactorioVersionStringRegex);
-            if (!factorioVersionPattern.IsMatch(versionString)) throw new InvalidFactorioVersionException($"Unable to parse \"{versionString}\" to a valid FactorioVersion due to formatting.");
-            
-            var factorioVersion = new FactorioVersion();
+            factorioVersionString = factorioVersionString?.Trim();
 
-            try
-            {
-                var intArray = versionString.Split('.').Select(n => Convert.ToInt32(n)).ToArray();
-                factorioVersion.Major = intArray[0];
-                factorioVersion.Minor = intArray[1];
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidFactorioVersionException($"An error occurred while attempting to parse the string \"{versionString}\" into a FactorioVersion.", ex);
-            }
+            Regex factorioVersionStringCaptureRegex = new Regex(FactorioVersion.FactorioVersionStringCapturePattern);
+            Match match = factorioVersionStringCaptureRegex.Match(factorioVersionString);            
+            if (!match.Success) throw new ArgumentException($"Unable to parse \"{factorioVersionString}\" to a valid ReleaseFileName due to formatting.", "factorioVersionString");
 
-            return factorioVersion;
+            Int32 majorValue = Convert.ToInt32(match.Groups[0].Value);
+            Int32 minorValue = Convert.ToInt32(match.Groups[1].Value);
+
+            if (majorValue < 0 || minorValue < 0) throw new ArgumentOutOfRangeException($"Unable to parse \"{majorValue}.{minorValue}\" into a FactorioVersion - version parts must be positive.", "factorioVersionString");
+
+            return new FactorioVersion
+            {
+                Major = majorValue,
+                Minor = minorValue
+            };
         }
 
         public Int32 Major { get; private set; }
@@ -49,34 +48,24 @@ namespace FactorioProductionCells.Domain.ValueObjects
 
         public override bool Equals(Object obj)
         {
-            if(obj == null || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            }
-            else
-            {
-                FactorioVersion right = (FactorioVersion) obj;
-                return this.Major == right.Major
-                    && this.Minor == right.Minor;
-            }
+            if(obj.GetType() != this.GetType()) throw new ArgumentException("Unable to compare the specified object to a FactorioVersion.", "obj");
+            
+            return base.Equals(obj);
         }
 
         public override int GetHashCode()
         {
-            var hash = new HashCode();
-            hash.Add(this.Major);
-            hash.Add(this.Minor);
-            return hash.ToHashCode();
+            return base.GetHashCode();
         }
 
         public static bool operator ==(FactorioVersion left, FactorioVersion right)
         {
-            return left.Equals(right);
+            return ValueObject.EqualOperator(left, right);
         }
 
         public static bool operator !=(FactorioVersion left, FactorioVersion right)
         {
-            return !left.Equals(right);
+            return ValueObject.NotEqualOperator(left, right);
         }
 
         public static bool operator >(FactorioVersion left, FactorioVersion right)
@@ -103,6 +92,17 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return left.Equals(right)
                 || left.Major < right.Major
                 || (left.Major == right.Major && left.Minor < left.Minor);
+        }
+
+        public int CompareTo(Object obj)
+        {
+            if(obj.GetType() != this.GetType()) throw new ArgumentException("The specified object to compare is not a ModVersion.", "obj");
+
+            FactorioVersion right = (FactorioVersion)obj;
+            
+            if (this < right) return -1;
+            else if (this > right) return 1;
+            else return 0;
         }
 
         public override string ToString()

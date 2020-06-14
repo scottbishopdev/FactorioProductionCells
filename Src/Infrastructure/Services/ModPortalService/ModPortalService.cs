@@ -7,26 +7,27 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using FactorioProductionCells.Application.Common.Interfaces;
+using FactorioProductionCells.Application.Common.Interfaces.ModPortalService;
+using FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs;
 using FactorioProductionCells.Domain.Exceptions;
 
 namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
 {
     public class ModPortalService : IModPortalService
     {
-        // TODO: Implement logging. Previously had issues figuring out dependency injection.
+        // TODO: Implement logging.
+        // TODO: It feels like this implementation should be down in the infrastructure layer, but it's living up here. Why?
         private const String modPortalUrl = "https://mods.factorio.com/api/";
 
         private readonly HttpClient _httpClient;
         //private readonly ILogger<ModService> _logger;
 
-        public ModPortalService(
-            HttpClient httpClient)
+        public ModPortalService()
         {
-            _httpClient = httpClient;
+            _httpClient = new HttpClient();
         }
 
-        
-        public async Task<List<ModDTO>> GetAllMods()
+        public async Task<IList<IModDTO>> GetAllMods()
         {
             var builder = new UriBuilder(modPortalUrl + $"mods");
             builder.Query = "page_size=max";
@@ -38,8 +39,8 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
                 JObject jsonResponse = JObject.Parse(rawResponse);
                 List<JToken> results = jsonResponse["results"].Children().ToList();
 
-                List<ModDTO> modList = new List<ModDTO>();
-                results.ForEach(result => modList.Add((ModDTO) result.ToObject<IModDTO>()));
+                IList<IModDTO> modList = new List<IModDTO>();
+                results.ForEach(result => modList.Add(result.ToObject<ModDTO>()));
 
                 return modList;
             }
@@ -67,8 +68,7 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
                     }
                 }
 
-                ModDTO newMod = JsonConvert.DeserializeObject<ModDTO>(rawResponse);
-                return newMod;
+                return JsonConvert.DeserializeObject<ModDTO>(rawResponse);
             }
         }
     }

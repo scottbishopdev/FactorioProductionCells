@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace FactorioProductionCells.Domain.Common
 {
-    public abstract class ValueObject
+    public abstract class ValueObject : IEquatable<ValueObject>
     {
         protected static bool EqualOperator(ValueObject left, ValueObject right)
         {
@@ -22,14 +23,13 @@ namespace FactorioProductionCells.Domain.Common
 
         protected abstract IEnumerable<object> GetAtomicValues();
 
-        public override bool Equals(object obj)
+        public bool Equals(ValueObject other)
         {
-            if (obj == null || obj.GetType() != GetType())
+            if (other == null || other.GetType() != GetType())
             {
                 return false;
             }
 
-            var other = (ValueObject)obj;
             var thisValues = GetAtomicValues().GetEnumerator();
             var otherValues = other.GetAtomicValues().GetEnumerator();
 
@@ -48,6 +48,13 @@ namespace FactorioProductionCells.Domain.Common
             }
 
             return !thisValues.MoveNext() && !otherValues.MoveNext();
+        }
+        
+        public override bool Equals(object obj)
+        {
+            if(obj.GetType() != this.GetType()) throw new ArgumentException("Unable to compare the specified object to a ValueObject.", "obj");
+
+            return this.Equals((ValueObject)obj);
         }
 
         public override int GetHashCode()

@@ -15,10 +15,11 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
             builder.Property(mt => mt.LanguageId).IsRequired();
             builder.Property(mt => mt.Title).HasMaxLength(ModTitle.TitleLength).IsRequired();
             // Ignored Columns
-            builder.Ignore(mt => mt.TitleLength);
+            // TODO: Determine if we need to ignore static properties. We can't reference them like this, but also, EF might decide it wants to store it.
+            //builder.Ignore(mt => mt.TitleLength);
             // Indexes
             builder.HasOne(mt => mt.Mod).WithMany(m => m.Titles);
-            builder.HasOne(mt => mt.Language);
+            builder.HasOne(mt => mt.Language).WithMany(l => l.ModTitles);
 
             base.Configure(builder);
         }

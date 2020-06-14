@@ -4,6 +4,10 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS mod-update-scheduler-build
 WORKDIR /app
 
+WORKDIR /app/Domain
+COPY ./Domain/Domain.csproj ./
+RUN dotnet restore
+
 WORKDIR /app/Application
 COPY ./Application/Application.csproj ./
 RUN dotnet restore
@@ -17,6 +21,7 @@ COPY ./ModUpdateScheduler/ModUpdateScheduler.csproj ./
 RUN dotnet restore
 
 WORKDIR /app
+COPY ./Domain/. ./Domain/
 COPY ./Application/. ./Application/
 COPY ./Infrastructure/. ./Infrastructure/
 COPY ./ModUpdateScheduler/. ./ModUpdateScheduler/

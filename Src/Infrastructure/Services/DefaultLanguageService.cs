@@ -25,9 +25,14 @@ namespace FactorioProductionCells.Infrastructure.Services
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<FactorioProductionCellsDbContext>();
+                    var db = scope.ServiceProvider.GetRequiredService<IFactorioProductionCellsDbContext>();
                     var dbLanguage = db.Languages
                         .SingleOrDefault(l => l.IsDefault);
+
+                    if(dbLanguage == null)
+                    {
+                        throw new Exception("A default language wasn't found, and I can't be bothered to write a better Exception case for that right now.");
+                    }
 
                     this._defaultLanguage = dbLanguage;
                 }

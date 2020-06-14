@@ -15,9 +15,25 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
             builder.Property(ae => ae.AddedDate).IsRequired();
             builder.Property(ae => ae.LastModifiedBy);
             builder.Property(ae => ae.LastModified);
+            
+            
+            //builder.Property(ae => ae.AddedByUser).IsRequired();
+
+
+            //builder.Property(ae => ae.LastModifiedByUser);
             // Indexes
-            builder.HasOne(ae => ae.AddedByUser);
-            builder.HasOne(ae => ae.LastModifiedByUser);
+            //builder.HasOne(ae => ae.AddedByUser).WithMany().IsRequired();
+            //builder.HasOne(ae => ae.LastModifiedByUser).WithMany();
+            //builder.HasOne(ae => ae.LastModifiedByUser);
+
+
+            builder.HasOne(r => r.AddedByUser).WithMany();
+            builder.HasOne(r => r.LastModifiedByUser).WithMany();
+            /*
+            // Navigation Properties
+            public User AddedByUser { get; set; }
+            public User LastModifiedByUser { get; set; }
+            */
         }
     }
 }

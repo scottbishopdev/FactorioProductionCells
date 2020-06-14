@@ -12,6 +12,7 @@ namespace FactorioProductionCells.Infrastructure.Persistence
         public TContext CreateDbContext(string[] args)
         {
             /*
+            //TODO: Leaving this here in case we decide that we want to load connection strings and such via appsettings.json.
             var basePath = Directory.GetCurrentDirectory() + string.Format("{0}..{0}WebUI", Path.DirectorySeparatorChar);
             return Create(basePath, Environment.GetEnvironmentVariable(AspNetCoreEnvironment));
             */
@@ -24,24 +25,6 @@ namespace FactorioProductionCells.Infrastructure.Persistence
 
         protected abstract TContext CreateNewInstance(DbContextOptions<TContext> options);
 
-        /*
-        private TContext Create(string basePath, string environmentName)
-        {
-            
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(basePath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.Local.json", optional: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            var connectionString = configuration.GetConnectionString(ConnectionStringName);
-
-            return Create(connectionString);
-        }
-        */
-        
         private TContext Create(string connectionString)
         {
             if (string.IsNullOrEmpty(connectionString))

@@ -21,5 +21,5 @@ ToDo  List
   * An application that allows users to perform those use cases via a web-based interface
 * Worker Service is
   * We can imagine a worker service as an automated user. It still interacts with the system through use cases and has an identity of its own, but it just doesn't need a UI to do any of it.
-* Figure out a better way to structure the validation we're going in the entity constructors.
 * Look into the Database.EnsureCreated() method, which may be useful for seeding the database with necessary data (e.g. a default language of english, user accounts for the ModUpdater services, etc.).
+* Look into System.Globalization.CultureInfo and see if there's a way I can utilize a full culture for a user, instead of just a default language.

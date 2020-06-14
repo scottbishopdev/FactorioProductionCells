@@ -1,39 +1,21 @@
 using System;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Application.Common.Interfaces;
-using FactorioProductionCells.Infrastructure.Persistence;
 
 namespace FactorioProductionCells.ModUpdateScheduler.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        private User _currentUser;
-
-        public CurrentUserService(
-            IServiceScopeFactory serviceScopeFactory)
+        // TODO: It sickens me to implement this service this way, but it's all I can manage right now. I feel like I ought to be retreiving the ModUpdateUser's Id from the database
+        // directly, since we don't really have a need to know it precisely (we ought to be able to allow it to be automatically generated). Thing is, the hellhole of circular
+        // dependencies and the identity framework has worn down my resolve, and this project is in serious jeopardy of not being completed if I continue down that path.
+        public Guid GetCurrentUserId()
         {
-            _serviceScopeFactory = serviceScopeFactory;
+            return new Guid(Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_ID"));
         }
 
-        public User GetCurrentUser()
+        public String GetCurrentUserName()
         {
-            if (_currentUser == null)
-            {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<FactorioProductionCellsDbContext>();
-                    var dbUser = db.Users
-                        .SingleOrDefault(u => u.Username == "ModUpdateScheduler");
-
-                    this._currentUser = dbUser;
-                }
-            }
-            
-            return this._currentUser;
+            return Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_USERNAME");
         }
     }
 }

@@ -4,11 +4,11 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Application.Common.Interfaces;
-using FactorioProductionCells.Infrastructure.Services;
+using FactorioProductionCells.Application.Common.Interfaces.ModPortalService;
 
-namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
+namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
 {
-    public class ModDTO : IModDTO
+    public class ModDTO /*: IMapFrom<Mod>*/ : IModDTO
     {
         private IDefaultLanguageService _defaultLanguageService;
 
@@ -18,8 +18,8 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
         public String Summary { get; set; }
         public Int32 DownloadsCount { get; set; }
         public String Thumbnail { get; set; }
-        public List<ReleaseDTO> Releases { get; set; }
-        public ReleaseDTO LatestRelease
+        public IList<IReleaseDTO> Releases { get; set; } = new List<IReleaseDTO>();
+        public IReleaseDTO LatestRelease
         {
             get
             {
@@ -50,30 +50,40 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
             Console.WriteLine($"Mod.Title: {this.Title}");
             Console.WriteLine($"Mod.Owner: {this.Owner}");
             Console.WriteLine($"Mod.Summary: {this.Summary}");
-            Console.WriteLine($"Mod.Downloads_Count: {this.DownloadsCount}");
+            Console.WriteLine($"Mod.DownloadsCount: {this.DownloadsCount}");
             Console.WriteLine($"Mod.Thumbnail: {this.Thumbnail}");
 
-            this.Releases.ForEach(n => n.PrintRelease());
+            List<IReleaseDTO> releases = (List<IReleaseDTO>)this.Releases;
+
+            releases.ForEach(n => n.PrintRelease());
         }
 
+        /*
         public Mod ToDbMod()
         {
-            var dbMod = new Mod
-            {
-                Name = this.Name
-            };
-            
+            Guid someModId = Guid.NewGuid();
             // TODO: We need to determine how to properly extract the mod's localized title and populate this list more appropriately.
-            dbMod.Titles.Add(new ModTitle
-            {
-                //ModId = ?,
-                LanguageId = _defaultLanguageService.GetDefaultLanguage().Id,
-                Title = this.Title
-            });
+            // TODO: How can I create these things without a ModId? We're createing DB entities from data, so how can we have this ID before the record is created?
+            var dbTitles = new List<ModTitle>();
+            dbTitles.Add(new ModTitle(
+                ModId: someModId,
+                LanguageId: _defaultLanguageService.GetDefaultLanguage().Id,
+                Title: this.Title
+            ));
             
-            this.Releases.ForEach(r => dbMod.Releases.Add(r.ToDbRelease()));
+            var dbReleases = new List<Release>();
+            foreach (var release in this.Releases)
+            {
+                // TODO: 
+                dbReleases.Add(release.ToDbRelease(someModId));
+            }
 
-            return dbMod;
+            return new Mod(
+                Name: this.Name,
+                Titles: dbTitles,
+                Releases: dbReleases
+            );
         }
+        */
     }
 }

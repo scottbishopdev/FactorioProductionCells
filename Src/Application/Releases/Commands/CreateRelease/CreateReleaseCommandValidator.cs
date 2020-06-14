@@ -38,14 +38,15 @@ namespace FactorioProductionCells.Application.Releases.Commands
             RuleFor(r => r.DownloadUrl)
                 .NotEmpty().WithMessage("A download url for this release is required.")
                 .MaximumLength(Release.DownloadUrlLength).WithMessage($"A release's download URL must not exceed {Release.DownloadUrlLength} characters.")
-                .Matches("^\\/download\\/[\\S]{1,}\\/[0-9A-Fa-f]{24}$").WithMessage("A release's download URL must be in the format \"/download/<mod name>/*.\"");
+                .Matches(@"^\/download\/[\S]{1,}\/[0-9A-Fa-f]{24}$").WithMessage("A release's download URL must be in the format \"/download/<mod name>/*.\"");
+                
             RuleFor(r => r)
                 .MustAsync(BeValidDownloadUrlForMod).WithMessage("A release's download URL must reference the mod represented by the specified mod id.");
                 
             RuleFor(r => r.FileName)
                 .NotEmpty().WithMessage("A file name for this release is required.")
                 .MaximumLength(Release.FileNameLength).WithMessage($"A release's file name must not exceed {Release.FileNameLength} characters.")
-                .Matches("^[\\S]{1,}_[0-9]+\\.[0-9]+\\.[0-9]+\\.zip$").WithMessage("A release's file name must be in the format \"<mod name>_<release version>.zip\"");
+                .Matches(@"^[\S]{1,}_[0-9]+\.[0-9]+\.[0-9]+\.zip$").WithMessage("A release's file name must be in the format \"<mod name>_<release version>.zip\"");
             RuleFor(r => r)
                 .MustAsync(BeValidFilenameForMod).WithMessage("A release's file name must reference the mod represented by the specified mod id.")
                 .Must(BeValidFilenameForVersion).WithMessage("A release's file name must reference the specified version.");

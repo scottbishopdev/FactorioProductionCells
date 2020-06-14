@@ -7,32 +7,32 @@ using FactorioProductionCells.Domain.Exceptions;
 
 namespace FactorioProductionCells.Domain.ValueObjects
 {
-    public class ModVersion : ValueObject
+    public class ModVersion : ValueObject, IComparable
     {
-        public const string ModVersionStringRegex = @"^\d+\.\d+\.\d+$";
+        public const String ModVersionStringCapturePattern = @"^(\d+)\.(\d+)\.(\d+)$";
+        
         private ModVersion() {}
 
-        public static ModVersion For(string versionString)
+        public static ModVersion For(String modVersionString)
         {
-            versionString = versionString?.Trim();
-            Regex modVersionPattern = new Regex(ModVersion.ModVersionStringRegex);
-            if (!modVersionPattern.IsMatch(versionString)) throw new InvalidModVersionException($"Unable to parse \"{versionString}\" to a valid ModVersion due to formatting.");
-            
-            var modVersion = new ModVersion();
+            modVersionString = modVersionString?.Trim();
 
-            try
-            {
-                var intArray = versionString.Split('.').Select(n => Convert.ToInt32(n)).ToArray();
-                modVersion.Major = intArray[0];
-                modVersion.Minor = intArray[1];
-                modVersion.Patch = intArray[2];
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidModVersionException($"An error occurred while attempting to parse the string \"{versionString}\" into a ModVersion.", ex);
-            }
+            Regex modVersionStringCaptureRegex = new Regex(ModVersion.ModVersionStringCapturePattern);
+            Match match = modVersionStringCaptureRegex.Match(modVersionString);            
+            if(!match.Success) throw new ArgumentException($"Unable to parse \"{modVersionString}\" to a valid ReleaseFileName due to formatting.", "modVersionString");
 
-            return modVersion;
+            Int32 majorValue = Convert.ToInt32(match.Groups[0].Value);
+            Int32 minorValue = Convert.ToInt32(match.Groups[1].Value);
+            Int32 patchValue = Convert.ToInt32(match.Groups[2].Value);
+
+            if (majorValue < 0 || minorValue < 0 || patchValue < 0) throw new ArgumentOutOfRangeException($"Unable to parse \"{majorValue}.{minorValue}\" into a ModVersion - version parts must be positive.", "factorioVersionString");
+
+            return new ModVersion
+            {
+                Major = majorValue,
+                Minor = minorValue,
+                Patch = patchValue
+            };
         }
 
         public Int32 Major { get; private set; }
@@ -44,43 +44,31 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return version.ToString();
         }
 
-        public static explicit operator ModVersion(string versionString)
+        public static explicit operator ModVersion(String versionString)
         {
             return For(versionString);
         }
 
         public override bool Equals(Object obj)
         {
-            if(obj == null || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            }
-            else
-            {
-                ModVersion right = (ModVersion) obj;
-                return this.Major == right.Major
-                    && this.Minor == right.Minor
-                    && this.Patch == right.Patch;
-            }
+            if(obj.GetType() != this.GetType()) throw new ArgumentException("Unable to compare the specified object to a ModVersion.", "obj");
+            
+            return base.Equals(obj);
         }
 
         public override int GetHashCode()
         {
-            var hash = new HashCode();
-            hash.Add(this.Major);
-            hash.Add(this.Minor);
-            hash.Add(this.Patch);
-            return hash.ToHashCode();
+            return base.GetHashCode();
         }
 
         public static bool operator ==(ModVersion left, ModVersion right)
         {
-            return left.Equals(right);
+            return ValueObject.EqualOperator(left, right);
         }
 
         public static bool operator !=(ModVersion left, ModVersion right)
         {
-            return !left.Equals(right);
+            return ValueObject.NotEqualOperator(left, right);
         }
 
         public static bool operator >(ModVersion left, ModVersion right)
@@ -111,6 +99,17 @@ namespace FactorioProductionCells.Domain.ValueObjects
                 || left.Major < right.Major
                 || (left.Major == right.Major && left.Minor < left.Minor)
                 || (left.Major == right.Major && left.Minor == right.Minor && left.Patch < right.Patch);
+        }
+
+        public int CompareTo(Object obj)
+        {
+            if(obj.GetType() != this.GetType()) throw new ArgumentException("Unable to compare the specified object to a ModVersion.", "obj");
+
+            ModVersion right = (ModVersion)obj;
+            
+            if (this < right) return -1;
+            else if (this > right) return 1;
+            else return 0;
         }
 
         public override string ToString()

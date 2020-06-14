@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -33,11 +34,14 @@ namespace FactorioProductionCells.Application.Common.Extensions
                         logger.LogInformation($"Applying outstanding migrations up to id: {lastDefinedMigration}");
                         db.Database.Migrate();
                     }
+
+                    // TODO: See if I can inject some seed data here. Would be defined in Infrastructure/Persistence as FactorioProductionCellsDbContextSeed.cs.
+                    // see: https://github.com/jasontaylordev/CleanArchitecture/blob/master/src/Infrastructure/Persistence/ApplicationDbContextSeed.cs
                 }
                 catch (Exception ex)
                 {
-                    
                     logger.LogError(ex, $"An error occurred while performing migration of the database context {typeof(T).FullName}.");
+                    throw ex;
                 }
             }
             
@@ -45,3 +49,4 @@ namespace FactorioProductionCells.Application.Common.Extensions
         }
     }
 }
+*/

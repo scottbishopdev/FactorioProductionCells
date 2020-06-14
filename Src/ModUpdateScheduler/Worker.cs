@@ -1,150 +1,141 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-//using FactorioProductionCells.Application.Common.Interfaces;
-using FactorioProductionCells.Infrastructure.Persistence;
-using FactorioProductionCells.Infrastructure.Services.ModPortalService;
+using FactorioProductionCells.Application.Common.Interfaces;
+using FactorioProductionCells.Application.Common.Interfaces.ModPortalService;
+using FactorioProductionCells.Application.Mods.Queries.GetModByName;
+using FactorioProductionCells.Domain.Entities;
 
 namespace FactorioProductionCells.ModUpdateScheduler
 {
     public class Worker : BackgroundService
     {
+        private const Int32 SleepDuration = 3*60*1000;
         private readonly ILogger<Worker> _logger;
+        private readonly IMediator _mediator;
         private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        private HttpClient _httpClient;
-        private ModPortalService _modPortalService;
-        
+        private readonly IModPortalService _modPortalService;
+        private readonly IMessageQueue _messageQueue;
+        private readonly IDateTimeService _dateTimeService;
 
         public Worker(
             ILogger<Worker> logger,
-            IServiceScopeFactory serviceScopeFactory)
+            IMediator mediator,
+            IServiceScopeFactory serviceScopeFactory,
+            IModPortalService modPortalService,
+            IMessageQueue messageQueue,
+            IDateTimeService dateTimeService)
         {
             _logger = logger;
+            _mediator = mediator;
             _serviceScopeFactory = serviceScopeFactory;
+            _modPortalService = modPortalService;
+            _messageQueue = messageQueue;
+            _dateTimeService = dateTimeService;
         }
 
         public override Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("ModUpdateScheduler starting up at {Time}", DateTime.UtcNow);
-            
-            _httpClient = new HttpClient();
-            _modPortalService = new ModPortalService(_httpClient);
-
-            /*
-            // Hostname will probably have top change here.
-            var factory = new ConnectionFactory() { HostName = "RabbitMQ" };
-            using (var connection = factory.CreateConnection())
-            {
-                using (var channel = connection.CreateModel())
-                {
-                    // This statement declares (and creates?) a queue with the name startUpdate. We should do this in both clients and producers, as we can't be sure which will start first.
-                    channel.QueueDeclare(queue: "startUpdate",
-                                         durable: false,
-                                         exclusive: false,
-                                         autoDelete: false,
-                                         arguments: null);
-
-                    var consumer = new EventingBasicConsumer(channel);
-
-                    // This is where we're defining what to do when we receive a message to the above queue.
-                    consumer.Received += (model, ea) =>
-                    {
-                        var body = ea.Body;
-                        // Is the "Encoding.UTF8" bit necessary
-                        var message = Encoding.UTF8.GetString(body.ToArray());
-                        Console.WriteLine(" [x] Received {0}", message);
-                    };
-
-                    // Huh?
-                    channel.BasicConsume(queue: "startUpdate",
-                                         autoAck: true,
-                                         consumer: consumer);
-
-                    Console.WriteLine("Press [enter] to exit.");
-                    Console.ReadLine();
-                }
-            }
-            */
+            _logger.LogInformation($"-----ModUpdateScheduler starting up at {_dateTimeService.GetCurrentTime()}");
 
             return base.StartAsync(stoppingToken);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            List<ModDTO> newModList = (List<ModDTO>) await _modPortalService.GetAllMods();
-
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<FactorioProductionCellsDbContext>();
-
-                int counter = 0;
-                foreach(ModDTO newMod in newModList)
-                {
-                    _logger.LogInformation($"Searching for {newMod.Name} in database...");
-
-                    // TODO: Implement error handling for a failed DB connection.
-                    try
-                    {
-                        var dbMod = db.Mods
-                            .Include(mod => mod.Releases)
-                            .SingleOrDefault(m => m.Name == newMod.Name);
-
-                        if(dbMod == null)
-                        {
-                            // We didn't find a matching mod, so we need to add this new one to the database.
-
-
-
-                        }
-                        if(dbMod.Releases.OrderBy(r => r.ReleasedAt).Single().ReleasedAt < newMod.LatestRelease.ReleasedAt)
-                        {
-                            // We found a matching mod, but it needs to be updated.
-                        }
-                        else
-                        {
-                            // We found a matching mod and it doesn't need to be updated.
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                        Console.WriteLine(ex.Message);
-                        Console.WriteLine(ex.Source);
-                        Console.WriteLine(ex.StackTrace);
-                    }
-
-                    if(counter >= 10)
-                    {
-                        break;
-                    }
-                    counter++;
-                }
-            }
-
-            /*
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(60*1000, stoppingToken);
+                _logger.LogInformation($"ModUpdateService running check for any mods that needs to be added or updated at: {_dateTimeService.GetCurrentTime()}");
+
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    Int32 modsAdded = 0;
+                    Int32 modsUpdated = 0;
+                    Int32 modsUpToDate = 0;
+                    
+                    // TODO: Can we DI this in? I feel like we should be able to DI this in now that I'm registering services correctly.
+                    var modPortal = scope.ServiceProvider.GetRequiredService<IModPortalService>();
+
+                    _logger.LogInformation("Got the mod portal service.");
+
+                    //List<IModDTO> newModList = (List<IModDTO>) await _modPortalService.GetAllMods();
+                    List<IModDTO> newModList = (List<IModDTO>) await modPortal.GetAllMods();
+
+                    _logger.LogInformation($"Got the list of mods from the mod portal. Found {newModList.Count} mods.");
+
+                    int counter = 0;
+                    foreach(IModDTO newMod in newModList)
+                    {
+                        //_logger.LogInformation($"Searching for {newMod.Name} in database...");
+
+                        // TODO: Implement error handling for a failed DB connection.
+                        try
+                        {
+                            _logger.LogInformation($"Trying to find {newMod.Name} in the database...");
+                            
+                            Mod dbMod = await _mediator.Send(new GetModByNameQuery{ Name = newMod.Name }, stoppingToken);
+
+                            if(dbMod == null)
+                            {
+                                modsAdded++;
+                                _logger.LogInformation($"[ ] Detected that mod {newMod.Name} does not exist, and needs to be added.");
+                                // We didn't find a matching mod, so we need to add this new one to the database.
+                                _messageQueue.SendMessage("AddMod", newMod.Name);
+
+                            }
+                            else if(dbMod.GetLatestRelease().ReleasedAt < newMod.LatestRelease.ReleasedAt)
+                            {
+                                modsUpdated++;
+                                _logger.LogInformation($"[-] Detected that mod {newMod.Name} exists and needs to be updated.");
+                                _messageQueue.SendMessage("UpdateMod", newMod.Name);
+                            }
+                            else
+                            {
+                                modsUpToDate++;
+                                _logger.LogInformation($"[X] Detected that mod {newMod.Name} exists and is up to date.");
+                                // We found a matching mod and it doesn't need to be updated.
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogInformation($"An exception occurred while attempting to find the mod {newMod.Name}:");
+                            Console.WriteLine(ex.ToString());
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine(ex.Source);
+                            Console.WriteLine(ex.StackTrace);
+
+                            throw ex;
+                        }
+
+                        if(counter >= 9) break;
+                        counter++;
+                    }
+
+
+                    newModList = null;
+
+                    _logger.LogInformation($"ModUpdateScheduler completed execution at {_dateTimeService.GetCurrentTime()} with the following results:");
+                    _logger.LogInformation($"    Mods Added:       {modsAdded.ToString()}");
+                    _logger.LogInformation($"    Mods Updated:     {modsUpdated.ToString()}");
+                    _logger.LogInformation($"    Mods Up To Date:  {modsUpToDate.ToString()}");
+                    _logger.LogInformation($"Sleeping for {Worker.SleepDuration}...");
+                    _logger.LogInformation(" ");
+                }
+                
+                // Wait 3 minutes before we run again.
+                await Task.Delay(Worker.SleepDuration, stoppingToken);
             }
-            */
+            
         }
 
         public override Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("ModUpdateScheduler shutting down at {Time}", DateTime.UtcNow);
-
-            _httpClient.Dispose();
+            _logger.LogInformation($"-----ModUpdateScheduler shutting down at {_dateTimeService.GetCurrentTime()}");
 
             return base.StopAsync(stoppingToken);
         }

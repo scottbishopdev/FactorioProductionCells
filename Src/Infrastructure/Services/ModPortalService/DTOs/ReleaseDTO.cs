@@ -1,15 +1,18 @@
 using System;
+using System.Collections.Generic;
 using FactorioProductionCells.Domain.Entities;
+using FactorioProductionCells.Domain.ValueObjects;
 using FactorioProductionCells.Application.Common.Interfaces;
+using FactorioProductionCells.Application.Common.Interfaces.ModPortalService;
 
-namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
+namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
 {
-    public class ReleaseDTO : IReleaseDTO
+    public class ReleaseDTO /*: IMapFrom<Release>*/ : IReleaseDTO
     {
         public String DownloadURL { get; set; }
         public String FileName { get; set; }
         public DateTime ReleasedAt { get; set; }
-        public ReleaseInfoDTO InfoJson { get; set; }
+        public IReleaseInfoDTO InfoJson { get; set; }
         public String Version { get; set; }
         public String Sha1 { get; set; }
 
@@ -20,29 +23,29 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
             Console.WriteLine($"    Mod.Releases.File_Name: {this.FileName}");
             Console.WriteLine($"    Mod.Releases.Released_At: {this.ReleasedAt}");
             Console.WriteLine($"    Mod.Releases.Sha1: {this.Sha1}");
-            Console.WriteLine($"    Mod.Releases.Info_Json.Factorio_Version: {this.InfoJson.FactorioVersion}");
-            Console.WriteLine($"    Mod.Releases.Info_Json.Dependencies:");
-
-            foreach(String d in this.InfoJson.Dependencies)
-            {
-                Console.WriteLine($"        {d}");
-            }
+            InfoJson.PrintReleaseInfo();
         }
 
-        public Release ToDbRelease()
+        /*
+        public Release ToDbRelease(Guid ModId)
         {
-            var dbRelease = new Release
+            var dbDependencies = new List<Dependency>();
+            foreach (var dependencyString in this.InfoJson.Dependencies)
             {
-                DownloadUrl = this.DownloadURL,
-                FileName = this.FileName,
-                ReleasedAt = this.ReleasedAt,
-                Version = this.Version,
-                Sha1 = this.Sha1,
-                FactorioVersion = this.InfoJson.FactorioVersion,
-                Dependencies = this.InfoJson.Dependencies
-            };
-
-            return dbRelease;
+                dbDependencies.Add(Dependency.For(dependencyString));
+            }
+            
+            return new Release(
+                ModId: ModId, // TODO: wat? How do I get this?
+                ReleasedAt: this.ReleasedAt,
+                Sha1: this.Sha1,
+                DownloadUrl: ReleaseDownloadUrl.For(this.DownloadURL),
+                ReleaseFileName: ReleaseFileName.For(this.FileName),
+                Version: ModVersion.For(this.Version),
+                FactorioVersion: FactorioVersion.For(InfoJson.FactorioVersion),
+                Dependencies: dbDependencies
+            );
         }
+        */
     }
 }
