@@ -1,6 +1,5 @@
 using System;
 using FactorioProductionCells.Domain.Enums;
-using FactorioProductionCells.Domain.Validators;
 
 namespace FactorioProductionCells.Domain.Entities
 {

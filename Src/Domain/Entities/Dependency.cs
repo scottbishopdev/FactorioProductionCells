@@ -9,26 +9,20 @@ namespace FactorioProductionCells.Domain.Entities
 {
     public class Dependency : AuditableEntity
     {
-        //public const String DependencyStringCapturePattern = @"^(\?|!|\(\?\))? ?([\S]{1,}) (>=|>|=|<=|<) ([0-9]+\.[0-9]+\.[0-9]+)$";
         public static String DependencyStringCapturePattern = $"^(\\?|!|\\(\\?\\))? ?([\\S]{{1,{Mod.NameLength}}}) (>=|>|=|<=|<) ([0-9]+\\.[0-9]+\\.[0-9]+)$";
         
         private Dependency() {}
 
-        //public Dependency(Guid ReleaseId, /*Guid DependentModId*/ String DependentModName, DependencyType DependencyType, DependencyComparisonType DependencyComparisonType, ModVersion DependentModVersion)
-        public Dependency(Release Release, /*Guid DependentModId*/ String DependentModName, DependencyType DependencyType, DependencyComparisonType DependencyComparisonType, ModVersion DependentModVersion)
+        public Dependency(Release Release, String DependentModName, DependencyType DependencyType, DependencyComparisonType DependencyComparisonType, ModVersion DependentModVersion)
         {
-            //ObjectValidator.ValidateRequiredObject(ReleaseId, nameof(ReleaseId));
             ObjectValidator.ValidateRequiredObject(Release, nameof(Release));
             ObjectValidator.ValidateRequiredObject(DependencyType, nameof(DependencyType));
-            //ObjectValidator.ValidateRequiredObject(DependentModId, nameof(DependentModId));
             StringValidator.ValidateRequiredStringWithMaxLength(DependentModName, nameof(DependentModName), Mod.NameLength);
             ObjectValidator.ValidateRequiredObject(DependencyComparisonType, nameof(DependencyComparisonType));
             ObjectValidator.ValidateRequiredObject(DependentModVersion, nameof(DependentModVersion));
 
-            //this.ReleaseId = ReleaseId;
             this.Release = Release;
             this.DependencyType = DependencyType;
-            //this.DependentModId = DependentModId;
             this.DependentModName = DependentModName;
             this.DependencyComparisonType = DependencyComparisonType;
             this.DependentModVersion = DependentModVersion;
@@ -47,7 +41,6 @@ namespace FactorioProductionCells.Domain.Entities
             String dependencyComparisonTypeValue = match.Groups[2].Value;
             String modVersionValue = match.Groups[3].Value;
 
-            // TODO: Implement a converter that converts the stored mod name into a ModId so we can store a FK in the database.
             return new Dependency
             {
                 DependencyType = DependencyType.For(dependencyTypeValue),
@@ -58,6 +51,7 @@ namespace FactorioProductionCells.Domain.Entities
         }
 
         public Guid ReleaseId { get; private set; }
+        // TODO: Would it be possible to link directly to the release we're dependent on here instead of just a mod? If so, I'd imagine we'd need to validate the hell out of that relationship.
         public Guid DependentModId { get; private set; }
         public DependencyTypeId DependencyTypeId { get; private set; }
         public String DependentModName { get; private set; }

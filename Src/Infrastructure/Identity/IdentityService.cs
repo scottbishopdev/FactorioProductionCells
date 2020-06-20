@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Application.Common.Interfaces;
 using FactorioProductionCells.Application.Common.Models;
 
@@ -10,36 +11,70 @@ namespace FactorioProductionCells.Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
-        // TODO: I'd like to understand more about the UserManager here. For example, where is it storing it's data? I feel like I ought to be defining some kind of persistence for user information.
-        private readonly UserManager<NetCoreUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public IdentityService(UserManager<NetCoreUser> userManager)
+        public IdentityService(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
         
         public async Task<String> GetUserNameFromIdAsync(Guid userId)
         {
-            var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
-            return user.UserName;
+            
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return null;
+            }
+            else
+            {
+                return user.UserName;
+            }
         }
 
-        public async Task<Guid> GetIdFromUserNameAsync(String userName)
+        public async Task<Guid?> GetIdFromUserNameAsync(String userName)
         {
-            var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
-            return user.Id;
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            return user != null ? user.Id : (Guid?)null;
         }
 
-        public async Task<(Result Result, Guid UserId)> CreateUserAsync(String userName, String emailAddress, String password)
+        public async Task<Object> GetUserFromUserNameAsync(String userName)
         {
-            var newUser = new NetCoreUser
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            return user;
+        }
+
+        public async Task<Object> GetUserFromIdAsync(Guid id)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return user;
+        }
+
+        public async Task<(Result Result, Object User)> CreateUserAsync(String userName, String emailAddress, String password, Language preferredLanguage)
+        {
+            var newUser = new User
             {
                 UserName = userName,
-                Email = emailAddress
+                Email = emailAddress,
+                PreferredLanguageId = preferredLanguage.Id
             };
 
             var result = await _userManager.CreateAsync(newUser, password);
-            return (result.ToApplicationResult(), newUser.Id);
+            return (result.ToApplicationResult(), newUser);
+        }
+
+        public async Task<(Result Result, Object User)> CreateUserAsync(Guid id, String userName, String emailAddress, String password, Language preferredLanguage)
+        {
+            var newUser = new User
+            {
+                Id = id,
+                UserName = userName,
+                Email = emailAddress,
+                PreferredLanguageId = preferredLanguage.Id
+            };
+
+            var result = await _userManager.CreateAsync(newUser, password);
+            return (result.ToApplicationResult(), newUser);
         }
 
         public async Task<Result> DeleteUserByIdAsync(Guid userId)
@@ -53,7 +88,7 @@ namespace FactorioProductionCells.Infrastructure.Identity
             return Result.Success();
         }
 
-        public async Task<Result> DeleteUserAsync(NetCoreUser userToDelete)
+        public async Task<Result> DeleteUserAsync(User userToDelete)
         {
             var result = await _userManager.DeleteAsync(userToDelete);
             return result.ToApplicationResult();

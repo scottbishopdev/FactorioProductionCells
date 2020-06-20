@@ -12,31 +12,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    PasswordHash = table.Column<string>(nullable: true),
-                    SecurityStamp = table.Column<string>(nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DependencyComparisonTypes",
                 columns: table => new
                 {
@@ -65,8 +40,8 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false, defaultValueSql: "uuid_generate_v4()"),
-                    EnglishName = table.Column<string>(maxLength: 50, nullable: false),
-                    LanguageCode = table.Column<string>(maxLength: 20, nullable: false),
+                    EnglishName = table.Column<string>(maxLength: 100, nullable: false),
+                    LanguageTag = table.Column<string>(maxLength: 20, nullable: false),
                     IsDefault = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -75,19 +50,67 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    UserName = table.Column<string>(nullable: true)
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    PreferredLanguageId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Languages_PreferredLanguageId",
+                        column: x => x.PreferredLanguageId,
+                        principalTable: "Languages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
+                name: "Mods",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    AddedBy = table.Column<Guid>(nullable: false),
+                    AddedDate = table.Column<DateTime>(nullable: false),
+                    LastModifiedBy = table.Column<Guid>(nullable: true),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(maxLength: 200, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Mods", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Mods_Users_AddedBy",
+                        column: x => x.AddedBy,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Mods_Users_LastModifiedBy",
+                        column: x => x.LastModifiedBy,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -98,17 +121,17 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.PrimaryKey("PK_UserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        name: "FK_UserClaims_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
+                name: "UserLogins",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(nullable: false),
@@ -118,17 +141,17 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        name: "FK_UserLogins_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
+                name: "UserTokens",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(nullable: false),
@@ -138,43 +161,13 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        name: "FK_UserTokens_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Mods",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    AddedBy = table.Column<Guid>(nullable: false),
-                    AddedDate = table.Column<DateTime>(nullable: false),
-                    LastModifiedBy = table.Column<Guid>(nullable: true),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    AddedByUserId = table.Column<Guid>(nullable: true),
-                    LastModifiedByUserId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Mods", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Mods_User_AddedByUserId",
-                        column: x => x.AddedByUserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Mods_User_LastModifiedByUserId",
-                        column: x => x.LastModifiedByUserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -187,19 +180,17 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     AddedDate = table.Column<DateTime>(nullable: false),
                     LastModifiedBy = table.Column<Guid>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
-                    AddedByUserId = table.Column<Guid>(nullable: true),
-                    LastModifiedByUserId = table.Column<Guid>(nullable: true),
                     Title = table.Column<string>(maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ModTitles", x => new { x.ModId, x.LanguageId });
                     table.ForeignKey(
-                        name: "FK_ModTitles_User_AddedByUserId",
-                        column: x => x.AddedByUserId,
-                        principalTable: "User",
+                        name: "FK_ModTitles_Users_AddedBy",
+                        column: x => x.AddedBy,
+                        principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ModTitles_Languages_LanguageId",
                         column: x => x.LanguageId,
@@ -207,9 +198,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ModTitles_User_LastModifiedByUserId",
-                        column: x => x.LastModifiedByUserId,
-                        principalTable: "User",
+                        name: "FK_ModTitles_Users_LastModifiedBy",
+                        column: x => x.LastModifiedBy,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -229,8 +220,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     AddedDate = table.Column<DateTime>(nullable: false),
                     LastModifiedBy = table.Column<Guid>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
-                    AddedByUserId = table.Column<Guid>(nullable: true),
-                    LastModifiedByUserId = table.Column<Guid>(nullable: true),
                     ModId = table.Column<Guid>(nullable: false),
                     ReleasedAt = table.Column<DateTime>(nullable: false),
                     Sha1 = table.Column<string>(maxLength: 50, nullable: false),
@@ -250,15 +239,15 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Releases", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Releases_User_AddedByUserId",
-                        column: x => x.AddedByUserId,
-                        principalTable: "User",
+                        name: "FK_Releases_Users_AddedBy",
+                        column: x => x.AddedBy,
+                        principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Releases_User_LastModifiedByUserId",
-                        column: x => x.LastModifiedByUserId,
-                        principalTable: "User",
+                        name: "FK_Releases_Users_LastModifiedBy",
+                        column: x => x.LastModifiedBy,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -279,8 +268,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     AddedDate = table.Column<DateTime>(nullable: false),
                     LastModifiedBy = table.Column<Guid>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
-                    AddedByUserId = table.Column<Guid>(nullable: true),
-                    LastModifiedByUserId = table.Column<Guid>(nullable: true),
                     DependencyTypeId = table.Column<int>(nullable: false),
                     DependentModName = table.Column<string>(maxLength: 200, nullable: false),
                     DependencyComparisonTypeId = table.Column<int>(nullable: false),
@@ -292,11 +279,11 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Dependencies", x => new { x.ReleaseId, x.DependentModId });
                     table.ForeignKey(
-                        name: "FK_Dependencies_User_AddedByUserId",
-                        column: x => x.AddedByUserId,
-                        principalTable: "User",
+                        name: "FK_Dependencies_Users_AddedBy",
+                        column: x => x.AddedBy,
+                        principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Dependencies_DependencyComparisonTypes_DependencyComparison~",
                         column: x => x.DependencyComparisonTypeId,
@@ -316,9 +303,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Dependencies_User_LastModifiedByUserId",
-                        column: x => x.LastModifiedByUserId,
-                        principalTable: "User",
+                        name: "FK_Dependencies_Users_LastModifiedBy",
+                        column: x => x.LastModifiedBy,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -353,30 +340,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserClaims_UserId",
-                table: "AspNetUserClaims",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserLogins_UserId",
-                table: "AspNetUserLogins",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "NormalizedUserName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Dependencies_AddedByUserId",
+                name: "IX_Dependencies_AddedBy",
                 table: "Dependencies",
-                column: "AddedByUserId");
+                column: "AddedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dependencies_DependencyComparisonTypeId",
@@ -394,31 +360,37 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 column: "DependentModId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dependencies_LastModifiedByUserId",
+                name: "IX_Dependencies_LastModifiedBy",
                 table: "Dependencies",
-                column: "LastModifiedByUserId");
+                column: "LastModifiedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Languages_Id_IsDefault",
+                name: "IX_Languages_IsDefault",
                 table: "Languages",
-                columns: new[] { "Id", "IsDefault" },
+                column: "IsDefault",
                 unique: true,
                 filter: "\"IsDefault\" = true");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Mods_AddedByUserId",
+                name: "IX_Mods_AddedBy",
                 table: "Mods",
-                column: "AddedByUserId");
+                column: "AddedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Mods_LastModifiedByUserId",
+                name: "IX_Mods_LastModifiedBy",
                 table: "Mods",
-                column: "LastModifiedByUserId");
+                column: "LastModifiedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModTitles_AddedByUserId",
+                name: "IX_Mods_Name",
+                table: "Mods",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModTitles_AddedBy",
                 table: "ModTitles",
-                column: "AddedByUserId");
+                column: "AddedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ModTitles_LanguageId",
@@ -426,37 +398,54 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 column: "LanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModTitles_LastModifiedByUserId",
+                name: "IX_ModTitles_LastModifiedBy",
                 table: "ModTitles",
-                column: "LastModifiedByUserId");
+                column: "LastModifiedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Releases_AddedByUserId",
+                name: "IX_Releases_AddedBy",
                 table: "Releases",
-                column: "AddedByUserId");
+                column: "AddedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Releases_LastModifiedByUserId",
+                name: "IX_Releases_LastModifiedBy",
                 table: "Releases",
-                column: "LastModifiedByUserId");
+                column: "LastModifiedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Releases_ModId",
                 table: "Releases",
                 column: "ModId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserClaims_UserId",
+                table: "UserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLogins_UserId",
+                table: "UserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "Users",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "Users",
+                column: "NormalizedUserName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_PreferredLanguageId",
+                table: "Users",
+                column: "PreferredLanguageId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
-
             migrationBuilder.DropTable(
                 name: "Dependencies");
 
@@ -464,7 +453,13 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 name: "ModTitles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "UserClaims");
+
+            migrationBuilder.DropTable(
+                name: "UserLogins");
+
+            migrationBuilder.DropTable(
+                name: "UserTokens");
 
             migrationBuilder.DropTable(
                 name: "DependencyComparisonTypes");
@@ -476,13 +471,13 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 name: "Releases");
 
             migrationBuilder.DropTable(
-                name: "Languages");
-
-            migrationBuilder.DropTable(
                 name: "Mods");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Languages");
         }
     }
 }

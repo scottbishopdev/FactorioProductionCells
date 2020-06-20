@@ -1,5 +1,3 @@
-# Ignore all environment files, as these should be created per individual host.
-*.env
 config/*
 .vscode
 *bin/

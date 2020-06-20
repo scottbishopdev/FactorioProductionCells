@@ -27,8 +27,6 @@ namespace FactorioProductionCells.Application.Common.Behaviors
             _logger.LogInformation($"Validating request: Type: {typeof(TRequest).Name} Request: {request}");   
             
             var context = new ValidationContext(request);
-
-            // TODO: This is somehow trying to find validators for the request. How? It's not doing any reflection or anything...
             var failures = _validators
                 .Select(v => v.Validate(context))
                 .SelectMany(result => result.Errors)

@@ -28,9 +28,6 @@ namespace FactorioProductionCells.Application.Common.Behaviors
 
             var requestName = typeof(TRequest).Name;
             var userId = _currentUserService.GetCurrentUserId();
-
-            // TODO: Figure out the difference between using the CurrentUserService and the IdentityService here. I'm guessing that this will become apparent once the web app starts using this.
-            //var userName = _currentUserService.GetCurrentUserName();
             var userName = await _identityService.GetUserNameFromIdAsync(userId);
 
             _logger.LogInformation($"Received request: Type: {typeof(TRequest).Name} Request: {request} UserId: {userId} UserName: {userName}");

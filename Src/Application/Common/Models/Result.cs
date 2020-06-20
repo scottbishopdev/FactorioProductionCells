@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace FactorioProductionCells.Application.Common.Models
 {
-    // We'll use this class as a structured way of letting callers know whether or not a request was successful, along with any errors that occurred during the attempt to perform the request.
     public class Result
     {
         internal Result(Boolean succeeded, IEnumerable<String> errors)
@@ -14,7 +13,6 @@ namespace FactorioProductionCells.Application.Common.Models
         }
 
         public Boolean Succeeded { get; set; }
-
         public String[] Errors { get; set; }
 
         public static Result Success()

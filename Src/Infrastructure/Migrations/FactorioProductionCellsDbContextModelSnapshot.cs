@@ -31,9 +31,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<Guid>("AddedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AddedByUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("AddedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -54,12 +51,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("ReleaseId", "DependentModId");
 
-                    b.HasIndex("AddedByUserId");
+                    b.HasIndex("AddedBy");
 
                     b.HasIndex("DependencyComparisonTypeId");
 
@@ -67,7 +61,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasIndex("DependentModId");
 
-                    b.HasIndex("LastModifiedByUserId");
+                    b.HasIndex("LastModifiedBy");
 
                     b.ToTable("Dependencies");
                 });
@@ -160,20 +154,20 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.Property<string>("EnglishName")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(100);
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("LanguageCode")
+                    b.Property<string>("LanguageTag")
                         .IsRequired()
                         .HasColumnType("character varying(20)")
                         .HasMaxLength(20);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Id", "IsDefault")
+                    b.HasIndex("IsDefault")
                         .IsUnique()
                         .HasFilter("\"IsDefault\" = true");
 
@@ -184,12 +178,10 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.Property<Guid>("AddedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("AddedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("AddedDate")
@@ -201,17 +193,19 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("character varying(200)")
+                        .HasMaxLength(200);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddedByUserId");
+                    b.HasIndex("AddedBy");
 
-                    b.HasIndex("LastModifiedByUserId");
+                    b.HasIndex("LastModifiedBy");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Mods");
                 });
@@ -227,9 +221,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<Guid>("AddedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AddedByUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("AddedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -239,9 +230,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("character varying(200)")
@@ -249,11 +237,11 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasKey("ModId", "LanguageId");
 
-                    b.HasIndex("AddedByUserId");
+                    b.HasIndex("AddedBy");
 
                     b.HasIndex("LanguageId");
 
-                    b.HasIndex("LastModifiedByUserId");
+                    b.HasIndex("LastModifiedBy");
 
                     b.ToTable("ModTitles");
                 });
@@ -268,9 +256,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<Guid>("AddedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AddedByUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("AddedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -278,9 +263,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ModId")
@@ -296,30 +278,16 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddedByUserId");
+                    b.HasIndex("AddedBy");
 
-                    b.HasIndex("LastModifiedByUserId");
+                    b.HasIndex("LastModifiedBy");
 
                     b.HasIndex("ModId");
 
                     b.ToTable("Releases");
                 });
 
-            modelBuilder.Entity("FactorioProductionCells.Domain.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("FactorioProductionCells.Infrastructure.Identity.NetCoreUser", b =>
+            modelBuilder.Entity("FactorioProductionCells.Infrastructure.Identity.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -362,6 +330,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid>("PreferredLanguageId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -381,7 +352,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers");
+                    b.HasIndex("PreferredLanguageId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -404,7 +377,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("UserClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -425,7 +398,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("UserLogins");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -444,14 +417,16 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("UserTokens");
                 });
 
             modelBuilder.Entity("FactorioProductionCells.Domain.Entities.Dependency", b =>
                 {
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "AddedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("AddedByUserId");
+                        .HasForeignKey("AddedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FactorioProductionCells.Domain.Entities.DependencyComparisonType", "DependencyComparisonType")
                         .WithMany()
@@ -471,9 +446,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "LastModifiedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("LastModifiedByUserId");
+                        .HasForeignKey("LastModifiedBy");
 
                     b.HasOne("FactorioProductionCells.Domain.Entities.Release", "Release")
                         .WithMany("Dependencies")
@@ -509,20 +484,24 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
             modelBuilder.Entity("FactorioProductionCells.Domain.Entities.Mod", b =>
                 {
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "AddedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("AddedByUserId");
+                        .HasForeignKey("AddedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "LastModifiedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("LastModifiedByUserId");
+                        .HasForeignKey("LastModifiedBy");
                 });
 
             modelBuilder.Entity("FactorioProductionCells.Domain.Entities.ModTitle", b =>
                 {
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "AddedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("AddedByUserId");
+                        .HasForeignKey("AddedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FactorioProductionCells.Domain.Entities.Language", "Language")
                         .WithMany("ModTitles")
@@ -530,9 +509,9 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "LastModifiedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("LastModifiedByUserId");
+                        .HasForeignKey("LastModifiedBy");
 
                     b.HasOne("FactorioProductionCells.Domain.Entities.Mod", "Mod")
                         .WithMany("Titles")
@@ -543,13 +522,15 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
             modelBuilder.Entity("FactorioProductionCells.Domain.Entities.Release", b =>
                 {
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "AddedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("AddedByUserId");
+                        .HasForeignKey("AddedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("FactorioProductionCells.Domain.Entities.User", "LastModifiedByUser")
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
-                        .HasForeignKey("LastModifiedByUserId");
+                        .HasForeignKey("LastModifiedBy");
 
                     b.HasOne("FactorioProductionCells.Domain.Entities.Mod", "Mod")
                         .WithMany("Releases")
@@ -607,12 +588,10 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("ModName")
-                                .IsRequired()
                                 .HasColumnType("character varying(200)")
                                 .HasMaxLength(200);
 
                             b1.Property<string>("ReleaseToken")
-                                .IsRequired()
                                 .HasColumnType("character varying(24)")
                                 .HasMaxLength(24);
 
@@ -631,7 +610,6 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("ModName")
-                                .IsRequired()
                                 .HasColumnType("character varying(200)")
                                 .HasMaxLength(200);
 
@@ -667,9 +645,18 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("FactorioProductionCells.Infrastructure.Identity.User", b =>
+                {
+                    b.HasOne("FactorioProductionCells.Domain.Entities.Language", "PreferredLanguage")
+                        .WithMany()
+                        .HasForeignKey("PreferredLanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.NetCoreUser", null)
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -678,7 +665,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.NetCoreUser", null)
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -687,7 +674,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.NetCoreUser", null)
+                    b.HasOne("FactorioProductionCells.Infrastructure.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

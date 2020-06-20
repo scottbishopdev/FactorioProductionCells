@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using FactorioProductionCells.Domain.Common;
 using FactorioProductionCells.Domain.Validators;
 using FactorioProductionCells.Domain.ValueObjects;
@@ -13,10 +12,8 @@ namespace FactorioProductionCells.Domain.Entities
         
         private Release() {}
 
-        //public Release(Guid ModId, DateTime ReleasedAt, String Sha1, ReleaseDownloadUrl DownloadUrl, ReleaseFileName ReleaseFileName, ModVersion Version, FactorioVersion FactorioVersion, IList<Dependency> Dependencies)
         public Release(Mod Mod, DateTime ReleasedAt, String Sha1, ReleaseDownloadUrl DownloadUrl, ReleaseFileName ReleaseFileName, ModVersion Version, FactorioVersion FactorioVersion, List<Dependency> Dependencies)
         {
-            //ObjectValidator.ValidateRequiredObject(ModId, nameof(ModId));
             ObjectValidator.ValidateRequiredObject(Mod, nameof(Mod));
             DateTimeValidator.ValidateRequiredDateTimeBeforePresent(ReleasedAt, nameof(ReleasedAt));
             StringValidator.ValidateRequiredStringWithMaxLength(Sha1, nameof(Sha1), Release.Sha1Length);
@@ -24,12 +21,10 @@ namespace FactorioProductionCells.Domain.Entities
             ObjectValidator.ValidateRequiredObject(ReleaseFileName, nameof(ReleaseFileName));
             ObjectValidator.ValidateRequiredObject(Version, nameof(Version));
             ObjectValidator.ValidateRequiredObject(FactorioVersion, nameof(FactorioVersion));
-            //ListValidator.ValidateRequiredListNotEmpty<Dependency>(Dependencies, nameof(Dependencies));
             ListValidator.ValidateRequiredList<Dependency>(Dependencies, nameof(Dependencies));
 
             if (Version != ReleaseFileName.Version) throw new ArgumentException("The specified release file name version down not match the specified release version.", "ReleaseFileName");
 
-            //this.ModId = ModId;
             this.Mod = Mod;
             this.ReleasedAt = ReleasedAt;
             this.DownloadUrl = DownloadUrl;
@@ -39,11 +34,6 @@ namespace FactorioProductionCells.Domain.Entities
             this.FactorioVersion = FactorioVersion;
             this.Dependencies = Dependencies;
         }
-
-        /*
-        public Release(Mod Mod, DateTime ReleasedAt, String Sha1, ReleaseDownloadUrl DownloadUrl, ReleaseFileName ReleaseFileName, ModVersion Version, FactorioVersion FactorioVersion, IList<Dependency> Dependencies)
-            : this(Mod.Id, ReleasedAt, Sha1, DownloadUrl, ReleaseFileName, Version, FactorioVersion, Dependencies) {}
-        */
 
         public Guid Id { get; private set; }
         public Guid ModId { get; private set; }

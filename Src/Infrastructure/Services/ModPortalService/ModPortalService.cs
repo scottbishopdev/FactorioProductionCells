@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using FactorioProductionCells.Application.Common.Interfaces;
 using FactorioProductionCells.Application.Common.Interfaces.ModPortalService;
 using FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs;
 using FactorioProductionCells.Domain.Exceptions;
@@ -15,15 +14,15 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
 {
     public class ModPortalService : IModPortalService
     {
-        // TODO: Implement logging.
-        // TODO: It feels like this implementation should be down in the infrastructure layer, but it's living up here. Why?
         private const String modPortalUrl = "https://mods.factorio.com/api/";
 
         private readonly HttpClient _httpClient;
-        //private readonly ILogger<ModService> _logger;
+        private readonly ILogger<ModPortalService> _logger;
 
-        public ModPortalService()
+        public ModPortalService(
+            ILogger<ModPortalService> logger)
         {
+            _logger = logger;
             _httpClient = new HttpClient();
         }
 
@@ -42,6 +41,8 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
                 IList<IModDTO> modList = new List<IModDTO>();
                 results.ForEach(result => modList.Add(result.ToObject<ModDTO>()));
 
+                _logger.LogInformation($"Successfully retrieved {modList.Count} mods from the mod portal API.");
+
                 return modList;
             }
         }
@@ -56,7 +57,7 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService
                 JObject jsonResponse = JObject.Parse(rawResponse);
 
                 JToken message;
-                // TODO: See if this mess can be condensed down into a single if. I might not be able to because of the TryGetValue() call.
+                // TODO: Clean this mess up and implement some proper error handling in case we get a response we don't expect.
                 if(jsonResponse.ContainsKey("message"))
                 {
                     if(jsonResponse.TryGetValue("message", out message))

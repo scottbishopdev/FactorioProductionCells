@@ -1,8 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using FactorioProductionCells.Domain.Entities;
-
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
 {
@@ -12,11 +9,12 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
         {
             // Primary Key
             builder.HasKey(d => new {d.ReleaseId, d.DependentModId});
+            
             // Columns
             builder.Property(d => d.ReleaseId).IsRequired();
             builder.Property(d => d.DependentModId).IsRequired();
             builder.Property(d => d.DependencyTypeId).HasConversion<int>();
-            // TODO: I need to figure out if there's a way I can convert the ModName into a ModId for storage.
+            // TODO: See if a value converter could be used to store a ModId here instead of a mod name.
             builder.Property(d => d.DependentModName).HasMaxLength(Mod.NameLength).IsRequired();
             builder.Property(d => d.DependencyComparisonTypeId).HasConversion<int>();
 
@@ -35,6 +33,8 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
             // Indexes
             builder.HasOne(d => d.Release).WithMany(r => r.Dependencies);
             builder.HasOne(d => d.DependentMod).WithMany();
+            builder.HasOne(d => d.DependencyComparisonType).WithMany();
+            builder.HasOne(d => d.DependencyType).WithMany();
 
             base.Configure(builder);
         }

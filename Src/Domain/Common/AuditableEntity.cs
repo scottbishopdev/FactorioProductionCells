@@ -1,5 +1,4 @@
 using System;
-using FactorioProductionCells.Domain.Entities;
 
 namespace FactorioProductionCells.Domain.Common
 {
@@ -9,9 +8,5 @@ namespace FactorioProductionCells.Domain.Common
         public DateTime AddedDate { get; set; }
         public Guid? LastModifiedBy { get; set; }
         public DateTime? LastModified { get; set; }
-
-        // Navigation Properties
-        public User AddedByUser { get; set; }
-        public User LastModifiedByUser { get; set; }
     }
 }

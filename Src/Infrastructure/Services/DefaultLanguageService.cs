@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Application.Common.Interfaces;
-using FactorioProductionCells.Infrastructure.Persistence;
 
 namespace FactorioProductionCells.Infrastructure.Services
 {

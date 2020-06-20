@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using FactorioProductionCells.Domain.Entities;
 
 namespace FactorioProductionCells.Application.Common.Interfaces.ModPortalService
 {
@@ -10,7 +9,5 @@ namespace FactorioProductionCells.Application.Common.Interfaces.ModPortalService
         IList<String> Dependencies { get; set; }
         
         void PrintReleaseInfo();
-
-        //Release ToDbRelease();
     }
 }

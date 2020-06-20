@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using FactorioProductionCells.Domain.Entities;
 
 namespace FactorioProductionCells.Application.Common.Interfaces.ModPortalService
 {

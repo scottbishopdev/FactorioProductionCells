@@ -2,7 +2,6 @@ using System;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using FactorioProductionCells.Application.Common.Interfaces;
 
 namespace FactorioProductionCells.Infrastructure.Messaging
@@ -25,9 +24,6 @@ namespace FactorioProductionCells.Infrastructure.Messaging
             _logger.LogInformation($"RabbitMQ Password:    {Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS")}");
             _logger.LogInformation($"RabbitMQ HostName:    {RabbitMqAdapter.RabbitMQHostName}");
             _logger.LogInformation($"RabbitMQ Port:        {Convert.ToInt32(Environment.GetEnvironmentVariable("RABBITMQ_PORT"))}");
-            //_logger.LogInformation($"RabbitMQ VirtualHost: /");
-            //_logger.LogInformation($"RabbitMQ Heartbeat:   {new TimeSpan(0, 0, 60).ToString()}");
-            //_logger.LogInformation($"RabbitMQ UseSSL:      {true}");
 
             var factory = new ConnectionFactory
             {
@@ -35,16 +31,7 @@ namespace FactorioProductionCells.Infrastructure.Messaging
                 Password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS"),
                 HostName = RabbitMqAdapter.RabbitMQHostName,
                 Port = Convert.ToInt32(Environment.GetEnvironmentVariable("RABBITMQ_PORT")),
-                //VirtualHost = "/"
-                /*RequestedHeartbeat = new TimeSpan(0, 0, 60),
-                Ssl =
-                {
-                    ServerName = RabbitMqAdapter.RabbitMQHostName,
-                    Enabled = true
-                }*/
             };
-
-
 
             _connection = factory.CreateConnection();
             _logger.LogInformation($"Obtained a connection to RabbitMQ.");
@@ -70,9 +57,11 @@ namespace FactorioProductionCells.Infrastructure.Messaging
             _logger.LogInformation($"Declared the queue for the UpdateMod channel.");
         }
 
+        // TODO: Figure out if there's a way that I can allow callers to directly reference the channels defined on this adapter, instead of having to manually 
+        // provide the name of the channel that they want to send the message to.
         public void SendMessage(String channel, String message)
         {
-            _logger.LogInformation($"Attempting to publish the message\"{message}\" to the channel \"{channel}\".");
+            _logger.LogInformation($"Attempting to publish the message \"{message}\" to the channel \"{channel}\".");
             var body = Encoding.UTF8.GetBytes(message);
 
             if(channel == "AddMod")

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Reflection;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,8 +27,9 @@ namespace FactorioProductionCells.ModUpdateScheduler
     {
         public static void Main(string[] args)
         {
-            // TODO: Maybe we should put some kind of check in here that just makes it wait until Postgres and RabbitMQ are alive.
-            // Alternatively, we could have the process kill itsels if they're not up and rely on some kind of Docker or k8s retry policy.
+            // TODO: Maybe we should put some kind of check in here that just makes it wait until Postgres and RabbitMQ are alive. Alternatively, we might be able to mitigate
+            // this wait by implementing a retry solution (e.g. Polly). Alternatively, we could have the process kill itsels if they're not up and rely on some kind of Docker
+            // or k8s retry policy.
             Console.WriteLine("Waiting for 45 seconds to ensure Postgres and RabbitMQ have started up...");
             Thread.Sleep(45*1000);
 
@@ -88,21 +88,14 @@ namespace FactorioProductionCells.ModUpdateScheduler
                 
                 try
                 {
-                    // TODO: This code *shouldn't* know about or affect anything having to do with the ModUpdateWorker's user. As is, the call to SeedDefaultUsersAsync()
-                    // is trying to create everything. Instead, we should have separate calls for SeedAdministratorUser(), Seed ModUpdateSchedulerUser(), and 
-                    // SeedModUpdateWorkerUser(). This way, services can pick and choose which users they're dependent on. In reality, the system as a whole is 
-                    // dependent on the existence of all three of those users, but it's a better design for the individual components to only have hard dependencies
-                    // on the user records that they are going to directly use or interact with.
-                    logger.LogInformation($"Attempting to seed the database context {typeof(FactorioProductionCellsDbContext).FullName} with default user data...");
-                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<NetCoreUser>>();
-                    //await FactorioProductionCellsDbContextSeed.SeedDefaultUsersAsync(userManager);
-
-                    var modUpdateSchedulerUser = await FactorioProductionCellsDbContextSeed.SeedModUpdateSchedulerUser(userManager);
-                    logger.LogInformation($"Successfully created the user {modUpdateSchedulerUser.UserName} with Id {modUpdateSchedulerUser.Id} and email \"{modUpdateSchedulerUser.Email}\".");
-
                     logger.LogInformation($"Attempting to seed the database context {typeof(FactorioProductionCellsDbContext).FullName} with default language data...");
                     var dbContext = scope.ServiceProvider.GetRequiredService<IFactorioProductionCellsDbContext>();
-                    await FactorioProductionCellsDbContextSeed.SeedDefaultLanguageAsync(dbContext);
+                    var defaultLanguage = await FactorioProductionCellsDbContextSeed.SeedDefaultLanguageAsync(dbContext);
+
+                    logger.LogInformation($"Attempting to seed the database context {typeof(FactorioProductionCellsDbContext).FullName} with default user data...");
+                    var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
+                    var modUpdateSchedulerUser = await FactorioProductionCellsDbContextSeed.SeedModUpdateSchedulerUser(identityService, defaultLanguage);
+                    logger.LogInformation($"Successfully created the user {modUpdateSchedulerUser.UserName} with Id {modUpdateSchedulerUser.Id} and email \"{modUpdateSchedulerUser.Email}\".");
 
                     logger.LogInformation($"Data seed of database context {typeof(FactorioProductionCellsDbContext).FullName} complete.");
                 }
@@ -137,8 +130,7 @@ namespace FactorioProductionCells.ModUpdateScheduler
                     });
                     services.AddScoped<IFactorioProductionCellsDbContext>(sp => sp.GetRequiredService<FactorioProductionCellsDbContext>());
 
-                    // TODO: Why does ef core identity need to have the concrete version of the dbContext here?
-                    services.AddIdentityCore<NetCoreUser>().AddEntityFrameworkStores<FactorioProductionCellsDbContext>();
+                    services.AddIdentityCore<User>().AddEntityFrameworkStores<FactorioProductionCellsDbContext>();
 
                     Console.WriteLine("Attempting to add RabbitMqAdapter as singleton...");
                     services.AddSingleton<IDateTimeService, DateTimeService>();

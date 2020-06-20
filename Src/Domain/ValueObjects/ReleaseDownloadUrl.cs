@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using FactorioProductionCells.Domain.Common;
 using FactorioProductionCells.Domain.Entities;
-using FactorioProductionCells.Domain.Exceptions;
 
 namespace FactorioProductionCells.Domain.ValueObjects
 {

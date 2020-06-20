@@ -1,5 +1,4 @@
 using System;
-using FactorioProductionCells.Domain.Entities;
 
 namespace FactorioProductionCells.Application.Common.Interfaces.ModPortalService
 {
@@ -13,7 +12,5 @@ namespace FactorioProductionCells.Application.Common.Interfaces.ModPortalService
         String Sha1 { get; set; }
         
         void PrintRelease();
-
-        //Release ToDbRelease();
     }
 }

@@ -11,7 +11,6 @@ namespace FactorioProductionCells.Application.Common.Interfaces
         DbSet<Release> Releases { get; set; }
         DbSet<Language> Languages { get; set; }
         DbSet<ModTitle> ModTitles { get; set; }
-        //DbSet<User> Users { get; set; }
         DbSet<Dependency> Dependencies { get; set; }
         DbSet<DependencyType> DependencyTypes { get; set; }
         DbSet<DependencyComparisonType> DependencyComparisonTypes { get; set; }

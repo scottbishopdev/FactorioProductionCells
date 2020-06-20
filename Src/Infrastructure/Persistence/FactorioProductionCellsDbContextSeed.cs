@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using FactorioProductionCells.Infrastructure.Identity;
 using FactorioProductionCells.Application.Common.Interfaces;
 using FactorioProductionCells.Domain.Entities;
@@ -11,130 +9,87 @@ namespace FactorioProductionCells.Infrastructure.Persistence
 {
     public static class FactorioProductionCellsDbContextSeed
     {   
-        public static async Task<NetCoreUser> SeedAdministratorUser(UserManager<NetCoreUser> userManager)
+        // Note: The application as a whole depends on this seed data. Also, Most things are supposed to interact with the database via the Application
+        // layer, right? Finally, the only reason that the Infrastructure layer (specifically, the dbContext) needs to be dependent on the the CurrentUserService
+        // is so it can populate the audit fields when data is saved, and the only thing mandating *that* dependency is the fact that our data seeding is done down
+        // in the Infrastructure layer. Could we eliminate the whole DbContext -> CurrentUserService -> UserManager -> DbContext circular dependency issue by moving
+        // both the data seeding and population of audit fields up to the Application layer?
+        public static async Task<User> SeedAdministratorUser(IIdentityService identityService, Language preferredLanguage)
         {
             return await CreateUserIfNotExists(
-                userManager: userManager,
+                identityService: identityService,
                 Id: new Guid(Environment.GetEnvironmentVariable("ADMINISTRATOR_ID")),
                 UserName: Environment.GetEnvironmentVariable("ADMINISTRATOR_USERNAME"),
                 Email: Environment.GetEnvironmentVariable("ADMINISTRATOR_EMAIL"),
-                Password: Environment.GetEnvironmentVariable("ADMINISTRATOR_PASSWORD"));
+                Password: Environment.GetEnvironmentVariable("ADMINISTRATOR_PASSWORD"),
+                PreferredLanguage: preferredLanguage);
         }
         
-        public static async Task<NetCoreUser> SeedModUpdateSchedulerUser(UserManager<NetCoreUser> userManager)
+        public static async Task<User> SeedModUpdateSchedulerUser(IIdentityService identityService, Language preferredLanguage)
         {
+            String modUpdateSchedulerId = Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_ID");
+            Console.WriteLine($"ModUpdateScheduler Id will be: {modUpdateSchedulerId}");
+            
             return await CreateUserIfNotExists(
-                userManager: userManager,
+                identityService: identityService,
                 Id: new Guid(Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_ID")),
                 UserName: Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_USERNAME"),
                 Email: Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_EMAIL"),
-                Password: Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_PASSWORD"));
+                Password: Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_PASSWORD"),
+                PreferredLanguage: preferredLanguage);
         }
 
-        public static async Task<NetCoreUser> SeedModUpdateWorkerUser(UserManager<NetCoreUser> userManager)
+        public static async Task<User> SeedModUpdateWorkerUser(IIdentityService identityService, Language preferredLanguage)
         {
             return await CreateUserIfNotExists(
-                userManager: userManager,
+                identityService: identityService,
                 Id: new Guid(Environment.GetEnvironmentVariable("MODUPDATEWORKER_ID")),
                 UserName: Environment.GetEnvironmentVariable("MODUPDATEWORKER_USERNAME"),
                 Email: Environment.GetEnvironmentVariable("MODUPDATEWORKER_EMAIL"),
-                Password: Environment.GetEnvironmentVariable("MODUPDATEWORKER_PASSWORD"));
+                Password: Environment.GetEnvironmentVariable("MODUPDATEWORKER_PASSWORD"),
+                PreferredLanguage: preferredLanguage);
         }
 
-        /*
-        public static async Task SeedDefaultUsersAsync(UserManager<NetCoreUser> userManager)
+        private static async Task<User> CreateUserIfNotExists(IIdentityService identityService, Guid Id, String UserName, String Email, String Password, Language PreferredLanguage)
         {
-            await CreateUserIfNotExists(
-                userManager: userManager,
-                UserName: Environment.GetEnvironmentVariable("ADMINISTRATOR_USERNAME"),
-                Email: Environment.GetEnvironmentVariable("ADMINISTRATOR_EMAIL"),
-                Password: Environment.GetEnvironmentVariable("ADMINISTRATOR_PASSWORD"));
+            var result = await identityService.GetUserFromUserNameAsync(UserName);
 
-            await CreateUserIfNotExists(
-                userManager: userManager,
-                UserName: Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_USERNAME"),
-                Email: Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_EMAIL"),
-                Password: Environment.GetEnvironmentVariable("MODUPDATESCHEDULER_PASSWORD"));
-
-            await CreateUserIfNotExists(
-                userManager: userManager,
-                UserName: Environment.GetEnvironmentVariable("MODUPDATEWORKER_USERNAME"),
-                Email: Environment.GetEnvironmentVariable("MODUPDATEWORKER_EMAIL"),
-                Password: Environment.GetEnvironmentVariable("MODUPDATEWORKER_PASSWORD"));
-        }
-        */
-
-        private static async Task<NetCoreUser> CreateUserIfNotExists(UserManager<NetCoreUser> userManager, Guid Id, String UserName, String Email, String Password)
-        {
-            var user = await userManager.FindByNameAsync(UserName);
-            
-            if (user == null)
+            if (result == null)
             {
-                var newUser = new NetCoreUser
-                {
-                    Id = Id,
-                    UserName = UserName,
-                    Email = Email
-                };
+                var createResult = await identityService.CreateUserAsync(Id, UserName, Email, Password, PreferredLanguage);
 
-                var result = await userManager.CreateAsync(newUser, Password);
-
-                if (result.Succeeded)
+                if (createResult.Result.Succeeded)
                 {
-                    // TODO: I really don't like how I'm doing this here. It feels like there should be some kind of CreateAsync method that returns the actual
-                    // data for the user what was created (ala normal entity framework), but I can only find stuff that returns an IdentityResult.
-                    return await userManager.FindByNameAsync(UserName);
+                    // TODO: This cast feels a little dirty, is currently necessary since our User entity is defined in the Infrastructure layer and not the Domain layer.
+                    return (User)createResult.User;
                 }
                 else
                 {
-                    // TODO: If we somehow got here, we don't have any user data to return, so I think an exception is warranted (especially considering that the
+                    // If we somehow got here, we don't have any user data to return, so I think an exception is warranted (especially considering that the
                     // user in question is a requirement for the system to operate).
-                    throw new InvalidOperationException($"The following errors occurred while attempting to create the user {UserName}:\n {String.Join("\n", result.Errors)}");
+                    throw new InvalidOperationException($"The following errors occurred while attempting to create the user {UserName}:\n {String.Join("\n", createResult.Result.Errors)}");
                 }
             }
             else
             {
-                return user;
+                return (User)result;
             }
         }
 
-        public static async Task SeedDefaultLanguageAsync(IFactorioProductionCellsDbContext dbContext)
+        public static async Task<Language> SeedDefaultLanguageAsync(IFactorioProductionCellsDbContext dbContext)
         {
             if (!dbContext.Languages.Any())
             {
-                dbContext.Languages.Add(new Language("English", "en-us", true));
+                var defaultLanguage = new Language("English", "en-us", true);
+
+                dbContext.Languages.Add(defaultLanguage);
 
                 await dbContext.SaveChangesAsync();
+
+                return defaultLanguage;
             }
+
+            return (Language)null;
         }
-
-
-
-        /*
-        public static async Task SeedSampleDataAsync(ApplicationDbContext context)
-        {
-            // Seed, if necessary
-            if (!context.TodoLists.Any())
-            {
-                context.TodoLists.Add(new TodoList
-                {
-                    Title = "Shopping",
-                    Items =
-                    {
-                        new TodoItem { Title = "Apples", Done = true },
-                        new TodoItem { Title = "Milk", Done = true },
-                        new TodoItem { Title = "Bread", Done = true },
-                        new TodoItem { Title = "Toilet paper" },
-                        new TodoItem { Title = "Pasta" },
-                        new TodoItem { Title = "Tissues" },
-                        new TodoItem { Title = "Tuna" },
-                        new TodoItem { Title = "Water" }
-                    }
-                });
-
-                await context.SaveChangesAsync();
-            }
-        }
-        */
     }
 }

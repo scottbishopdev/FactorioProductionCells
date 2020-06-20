@@ -2,7 +2,6 @@ using System;
 using Xunit;
 using FactorioProductionCells.Domain.Entities;
 
-
 namespace FactorioProductionCells.Domain.UnitTests.Entities
 {
     public class LanguageTests
@@ -10,33 +9,33 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         [Theory]
         [InlineData(null, "en-us", false)]
         [InlineData("English", null, false)]
-        public void Language_WhenConstructorParameterIsNull_ThrowsArgumentNullException(String englishName, String languageCode, Boolean isDefault)
+        public void Language_WhenConstructorParameterIsNull_ThrowsArgumentNullException(String englishName, String languageTag, Boolean isDefault)
         {
             Assert.Throws<ArgumentNullException>(() => new Language(
                 EnglishName: englishName,
-                LanguageCode: languageCode,
+                LanguageTag: languageTag,
                 IsDefault: isDefault));
         }
 
         [Theory]
         [InlineData("", "en-us", false)]
         [InlineData("English", "", false)]
-        public void Language_WhenStringParameterIsEmpty_ThrowsArgumentException(String englishName, String languageCode, Boolean isDefault)
+        public void Language_WhenStringParameterIsEmpty_ThrowsArgumentException(String englishName, String languageTag, Boolean isDefault)
         {
             Assert.Throws<ArgumentException>(() => new Language(
                 EnglishName: englishName,
-                LanguageCode: languageCode,
+                LanguageTag: languageTag,
                 IsDefault: isDefault));
         }
 
         [Theory]
         [InlineData("", "en-us", false)]
         [InlineData("English", "", false)]
-        public void Language_WhenStringParameterIsTooLong_ThrowsArgumentException(String englishName, String languageCode, Boolean isDefault)
+        public void Language_WhenStringParameterIsTooLong_ThrowsArgumentException(String englishName, String languageTag, Boolean isDefault)
         {
             Assert.Throws<ArgumentException>(() => new Language(
                 EnglishName: englishName,
-                LanguageCode: languageCode,
+                LanguageTag: languageTag,
                 IsDefault: isDefault));
         }
 

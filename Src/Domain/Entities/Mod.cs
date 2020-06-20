@@ -18,9 +18,7 @@ namespace FactorioProductionCells.Domain.Entities
         public Mod(String Name, List<ModTitle> Titles, List<Release> Releases)
         {
             StringValidator.ValidateRequiredStringWithMaxLength(Name, nameof(Name), Mod.NameLength);
-            //ListValidator.ValidateRequiredListNotEmpty<ModTitle>(Titles, nameof(Titles));
             ListValidator.ValidateRequiredList<ModTitle>(Titles, nameof(Titles));
-            //ListValidator.ValidateRequiredListNotEmpty<Release>(Releases, nameof(Releases));
             ListValidator.ValidateRequiredList<Release>(Releases, nameof(Releases));
             
             this.Name = Name;
@@ -30,7 +28,7 @@ namespace FactorioProductionCells.Domain.Entities
 
         public Guid Id { get; private set; }
         public String Name { get; private set; }
-        public Boolean IsBaseMod => false;
+
         // TODO: The Application layer needs direct access to the collection properties in order to properly query things. Is there a way to protect the integrity of the lists AND give people the necessary access?
         public List<ModTitle> Titles { get; private set; } = new List<ModTitle>();
         public List<Release> Releases { get; private set; } = new List<Release>();
@@ -56,7 +54,6 @@ namespace FactorioProductionCells.Domain.Entities
 
         public Boolean TryRemoveRelease(Release releaseToRemove)
         {
-            //if(this.Releases.Count <= 1) throw new InvalidOperationException("A mod must always have at least one release. You may not remove the last release from a mod's list of releases.");
             return this.Releases.Remove(releaseToRemove);
         }
 

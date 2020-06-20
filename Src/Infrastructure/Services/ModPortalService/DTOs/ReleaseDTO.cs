@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
-using FactorioProductionCells.Domain.Entities;
-using FactorioProductionCells.Domain.ValueObjects;
-using FactorioProductionCells.Application.Common.Interfaces;
 using FactorioProductionCells.Application.Common.Interfaces.ModPortalService;
 
 namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
 {
-    public class ReleaseDTO /*: IMapFrom<Release>*/ : IReleaseDTO
+    public class ReleaseDTO : IReleaseDTO
     {
         public String DownloadURL { get; set; }
         public String FileName { get; set; }
@@ -25,27 +21,5 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
             Console.WriteLine($"    Mod.Releases.Sha1: {this.Sha1}");
             InfoJson.PrintReleaseInfo();
         }
-
-        /*
-        public Release ToDbRelease(Guid ModId)
-        {
-            var dbDependencies = new List<Dependency>();
-            foreach (var dependencyString in this.InfoJson.Dependencies)
-            {
-                dbDependencies.Add(Dependency.For(dependencyString));
-            }
-            
-            return new Release(
-                ModId: ModId, // TODO: wat? How do I get this?
-                ReleasedAt: this.ReleasedAt,
-                Sha1: this.Sha1,
-                DownloadUrl: ReleaseDownloadUrl.For(this.DownloadURL),
-                ReleaseFileName: ReleaseFileName.For(this.FileName),
-                Version: ModVersion.For(this.Version),
-                FactorioVersion: FactorioVersion.For(InfoJson.FactorioVersion),
-                Dependencies: dbDependencies
-            );
-        }
-        */
     }
 }

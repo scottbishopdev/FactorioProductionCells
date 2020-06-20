@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Application.Common.Interfaces;
 using FactorioProductionCells.Application.Common.Interfaces.ModPortalService;
 
 namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
 {
-    public class ModDTO /*: IMapFrom<Mod>*/ : IModDTO
+    public class ModDTO : IModDTO
     {
         private IDefaultLanguageService _defaultLanguageService;
 
@@ -38,8 +36,7 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
             }
         }
 
-        public ModDTO(
-            IDefaultLanguageService defaultLanguageService)
+        public ModDTO(IDefaultLanguageService defaultLanguageService)
         {
             _defaultLanguageService = defaultLanguageService;
         }
@@ -57,33 +54,5 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
 
             releases.ForEach(n => n.PrintRelease());
         }
-
-        /*
-        public Mod ToDbMod()
-        {
-            Guid someModId = Guid.NewGuid();
-            // TODO: We need to determine how to properly extract the mod's localized title and populate this list more appropriately.
-            // TODO: How can I create these things without a ModId? We're createing DB entities from data, so how can we have this ID before the record is created?
-            var dbTitles = new List<ModTitle>();
-            dbTitles.Add(new ModTitle(
-                ModId: someModId,
-                LanguageId: _defaultLanguageService.GetDefaultLanguage().Id,
-                Title: this.Title
-            ));
-            
-            var dbReleases = new List<Release>();
-            foreach (var release in this.Releases)
-            {
-                // TODO: 
-                dbReleases.Add(release.ToDbRelease(someModId));
-            }
-
-            return new Mod(
-                Name: this.Name,
-                Titles: dbTitles,
-                Releases: dbReleases
-            );
-        }
-        */
     }
 }
