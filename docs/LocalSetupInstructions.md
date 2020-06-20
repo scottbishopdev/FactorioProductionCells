@@ -10,10 +10,10 @@ You'll need both [Git](https://git-scm.com/) and [Docker](https://www.docker.com
 To get started, you'll need the repository cloned locally. Navigate to the parent directory where you'd like the app to run from, then open a command line and execute the following:
 ```bash
 # Clone the repository down
-$ git clone https://github.com/sbishop411/FactorioRatioCalculator
+$ git clone https://github.com/sbishop411/FactorioProductionCells
 
 # Go into the repository
-$ cd FactorioRatioCalculator
+$ cd FactorioProductionCells
 ```
 
 ## Configuring the .env File
