@@ -1,7 +1,7 @@
-# Ignore all environment files, as these should be created per individual host.
-*.env
 config/*
 .vscode
-*/bin
-*/obj
-PostgresMigrator/output
+*bin/
+*obj/
+*TestResults/
+launchsettings.json
+appsettings*.json

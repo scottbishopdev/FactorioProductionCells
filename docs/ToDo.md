@@ -1,11 +1,15 @@
 ToDo  List
 =====
 
-* See if there's a way to use a constraint on `production_cell_recipe` to ensure that it only stores valid `recipe`/`machine` combinations per `recipe_valid_machine`.
-* Create enum to indicate whether an `item` is an actual item or a fluid, and add a column on the `item` table to reference this. Also, find out if there's any reason that these may need to be separate tables (e.g. unique properties).
-* Look into whether or not we need the ability to link an `item` to also being a `machine` (e.g. Electric Furnace is a machine, but also used to create production science packs).
 * Look into how mod changes are applied to the base game. Do they overwrite specific recipes and entities, or simply exclude the originals and inject their own?
-* Look into how we can allow production cells to reference other production cells within themselves.
-* Look into whether or not we should create some kind of base "project" layer, which would allow users to define specific mods and versions within just that "project".
-* Look into the schema that we're going to use for production cells, and whether or not it would benefit from storing calculated values for the items/sec for inputs and outputs.
-* The webserver should probably have some kind of retry strategy defined. Look into Polly for this.
+* Look into whether or not we should create some kind of base "item space" or "project" layer, which would allow users to define specific mods and versions within just that "item space" or "project".
+* Look into the entity that we're going to use for production cells, and whether or not it would benefit from storing calculated values for the items/sec for inputs and outputs.
+* The webserver and worker services should probably have some kind of retry strategy defined for database and message queue interactions. Look into Polly for this.
+* Figure out if it's ok to include validators in the Domain layer like I have. It seems like the right place to validate an Entity object, as a given entity may be references in commands for a different entity in the Application layer.
+* Back up the mappings that we're allowing AutoMapper to perform with unit tests.
+* In fact, just write any tests at all. That would be great.
+* Look into System.Globalization.CultureInfo and see if there's a way I can utilize a full culture for a user, instead of just a default language.
+* ModUpdateWorker needs to validate that the mod it's working on actually needs to be added/updated.
+* The application as a whole depends on this seed data. Also, Most things are supposed to interact with the database via the Application layer, right? Finally, the only reason that the Infrastructure layer (specifically, the dbContext) needs to be dependent on the the CurrentUserService is so it can populate the audit fields when data is saved, and the only thing mandating *that* dependency is the fact that our data seeding is done down in the Infrastructure layer. Could we eliminate the whole DbContext -> CurrentUserService -> UserManager -> DbContext circular dependency issue by moving both the data seeding and population of audit fields up to the Application layer?
+* Look into whether or not DbSets for entities that don't need to be directly queries need to exist on the DbContext. I'm worried that schema changes might not be picked up for those entities if I remove them.
+* Determine if there's a way to *safely* execute Lua scripts from mods on the server side. If this isn't possible, is there a safe way to execute them on the clients?
