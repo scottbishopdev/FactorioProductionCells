@@ -33,13 +33,13 @@ namespace FactorioProductionCells.Domain.Entities
             dependencyString = dependencyString?.Trim();
 
             Regex dependencyStringCaptureRegex = new Regex(Dependency.DependencyStringCapturePattern);
-            Match match = dependencyStringCaptureRegex.Match(dependencyString);            
+            Match match = dependencyStringCaptureRegex.Match(dependencyString);
             if(!match.Success) throw new ArgumentException($"Unable to parse \"{dependencyString}\" to a valid Dependency due to formatting.", "dependencyString");
 
-            String dependencyTypeValue = match.Groups[0].Value;
-            String dependentModNameValue = match.Groups[1].Value;
-            String dependencyComparisonTypeValue = match.Groups[2].Value;
-            String modVersionValue = match.Groups[3].Value;
+            String dependencyTypeValue = match.Groups[1].Value;
+            String dependentModNameValue = match.Groups[2].Value;
+            String dependencyComparisonTypeValue = match.Groups[3].Value;
+            String modVersionValue = match.Groups[4].Value;
 
             return new Dependency
             {

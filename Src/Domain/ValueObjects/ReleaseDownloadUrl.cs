@@ -13,9 +13,11 @@ namespace FactorioProductionCells.Domain.ValueObjects
         
         private ReleaseDownloadUrl() {}
 
-        public static ReleaseDownloadUrl For(string releaseDownloadUrlString)
+        public static ReleaseDownloadUrl For(String releaseDownloadUrlString)
         {
-            releaseDownloadUrlString = releaseDownloadUrlString?.Trim();
+            if (releaseDownloadUrlString == null) throw new ArgumentNullException("releaseDownloadUrlString", "A value for the release download URL must be provided.");
+            
+            releaseDownloadUrlString = releaseDownloadUrlString.Trim();
 
             Regex releaseDownloadUrlStringCaptureRegex = new Regex(ReleaseDownloadUrl.ReleaseDownloadUrlStringCapturePattern);
             Match match = releaseDownloadUrlStringCaptureRegex.Match(releaseDownloadUrlString);            
@@ -23,8 +25,8 @@ namespace FactorioProductionCells.Domain.ValueObjects
 
             return new ReleaseDownloadUrl
             {
-                ModName = match.Groups[0].Value,
-                ReleaseToken = match.Groups[1].Value
+                ModName = match.Groups[1].Value,
+                ReleaseToken = match.Groups[2].Value
             };
         }
 
@@ -68,7 +70,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return $"/download/{ModName}/{ReleaseToken}";
         }
 
-        protected override IEnumerable<object> GetAtomicValues()
+        public override IEnumerable<object> GetAtomicValues()
         {
             yield return ModName;
             yield return ReleaseToken;

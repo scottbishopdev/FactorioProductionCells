@@ -12,9 +12,11 @@ namespace FactorioProductionCells.Domain.ValueObjects
 
         private ReleaseFileName() {}
 
-        public static ReleaseFileName For(string releaseFileNameString)
+        public static ReleaseFileName For(String releaseFileNameString)
         {
-            releaseFileNameString = releaseFileNameString?.Trim();
+            if (releaseFileNameString == null) throw new ArgumentNullException("releaseFileNameString", "A value for the release file name must be provided.");
+            
+            releaseFileNameString = releaseFileNameString.Trim();
 
             Regex releaseFileNameCaptureRegex = new Regex(ReleaseFileName.ReleaseFileNameStringCapturePattern);
             Match match = releaseFileNameCaptureRegex.Match(releaseFileNameString);            
@@ -22,8 +24,8 @@ namespace FactorioProductionCells.Domain.ValueObjects
 
             return new ReleaseFileName
             {
-                ModName = match.Groups[0].Value,
-                Version = ModVersion.For(match.Groups[1].Value)
+                ModName = match.Groups[1].Value,
+                Version = ModVersion.For(match.Groups[2].Value)
             };
         }
 
@@ -67,7 +69,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return $"{ModName}_{Version.ToString()}.zip";
         }
 
-        protected override IEnumerable<object> GetAtomicValues()
+        public override IEnumerable<object> GetAtomicValues()
         {
             yield return ModName;
             yield return Version;

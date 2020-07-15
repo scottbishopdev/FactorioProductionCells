@@ -7,21 +7,23 @@ namespace FactorioProductionCells.Domain.ValueObjects
 {
     public class ModVersion : ValueObject, IComparable
     {
-        public const String ModVersionStringCapturePattern = @"^(\d+)\.(\d+)\.(\d+)$";
+        public const String ModVersionStringCapturePattern = @"^(-?\d+)\.(-?\d+)\.(-?\d+)$";
         
         private ModVersion() {}
 
         public static ModVersion For(String modVersionString)
         {
-            modVersionString = modVersionString?.Trim();
+            if (modVersionString == null) throw new ArgumentNullException("modVersionString", "A value for the mod version must be provided.");
+            
+            modVersionString = modVersionString.Trim();
 
             Regex modVersionStringCaptureRegex = new Regex(ModVersion.ModVersionStringCapturePattern);
             Match match = modVersionStringCaptureRegex.Match(modVersionString);            
             if(!match.Success) throw new ArgumentException($"Unable to parse \"{modVersionString}\" to a valid ReleaseFileName due to formatting.", "modVersionString");
 
-            Int32 majorValue = Convert.ToInt32(match.Groups[0].Value);
-            Int32 minorValue = Convert.ToInt32(match.Groups[1].Value);
-            Int32 patchValue = Convert.ToInt32(match.Groups[2].Value);
+            Int32 majorValue = Convert.ToInt32(match.Groups[1].Value);
+            Int32 minorValue = Convert.ToInt32(match.Groups[2].Value);
+            Int32 patchValue = Convert.ToInt32(match.Groups[3].Value);
 
             if (majorValue < 0 || minorValue < 0 || patchValue < 0) throw new ArgumentOutOfRangeException($"Unable to parse \"{majorValue}.{minorValue}\" into a ModVersion - version parts must be positive.", "factorioVersionString");
 
@@ -72,7 +74,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
         public static bool operator >(ModVersion left, ModVersion right)
         {
             return left.Major > right.Major
-                || (left.Major == right.Major && left.Minor > left.Minor)
+                || (left.Major == right.Major && left.Minor > right.Minor)
                 || (left.Major == right.Major && left.Minor == right.Minor && left.Patch > right.Patch);
         }
 
@@ -80,14 +82,14 @@ namespace FactorioProductionCells.Domain.ValueObjects
         {
             return left.Equals(right)
                 || left.Major > right.Major
-                || (left.Major == right.Major && left.Minor > left.Minor)
+                || (left.Major == right.Major && left.Minor > right.Minor)
                 || (left.Major == right.Major && left.Minor == right.Minor && left.Patch > right.Patch);
         }
 
         public static bool operator <(ModVersion left, ModVersion right)
         {
             return left.Major < right.Major
-                || (left.Major == right.Major && left.Minor < left.Minor)
+                || (left.Major == right.Major && left.Minor < right.Minor)
                 || (left.Major == right.Major && left.Minor == right.Minor && left.Patch < right.Patch);
         }
 
@@ -95,7 +97,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
         {
             return left.Equals(right)
                 || left.Major < right.Major
-                || (left.Major == right.Major && left.Minor < left.Minor)
+                || (left.Major == right.Major && left.Minor < right.Minor)
                 || (left.Major == right.Major && left.Minor == right.Minor && left.Patch < right.Patch);
         }
 
@@ -115,7 +117,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return $"{Major}.{Minor}.{Patch}";
         }
 
-        protected override IEnumerable<object> GetAtomicValues()
+        public override IEnumerable<object> GetAtomicValues()
         {
             yield return Major;
             yield return Minor;

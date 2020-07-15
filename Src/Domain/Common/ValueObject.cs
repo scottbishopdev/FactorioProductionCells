@@ -21,7 +21,7 @@ namespace FactorioProductionCells.Domain.Common
             return !(EqualOperator(left, right));
         }
 
-        protected abstract IEnumerable<object> GetAtomicValues();
+        public abstract IEnumerable<object> GetAtomicValues();
 
         public bool Equals(ValueObject other)
         {
@@ -40,8 +40,7 @@ namespace FactorioProductionCells.Domain.Common
                     return false;
                 }
 
-                if (thisValues.Current != null &&
-                    !thisValues.Current.Equals(otherValues.Current))
+                if (thisValues.Current != null && !thisValues.Current.Equals(otherValues.Current))
                 {
                     return false;
                 }

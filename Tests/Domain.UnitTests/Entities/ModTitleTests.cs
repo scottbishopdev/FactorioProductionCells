@@ -9,7 +9,6 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
     public class ModTitleTests
     {
         private Mod _testMod;
-        //private Guid _languageGuid;
 
         public ModTitleTests()
         {
@@ -37,31 +36,23 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
                 factorioVersion: FactorioVersion.For("0.17"),
                 dependencies: testDependencies
             );
-
-            //_languageGuid = Guid.NewGuid();
-        
-
         }
         
-        
         [Theory]
-        [InlineData(null, "382c74c3-721d-4f34-80e5-57657b6cbc27", "Scott's Uber Test GeModden")]
-        [InlineData("DEWIT", null, "Scott's Uber Test GeModden")]
-        [InlineData("DEWIT", "382c74c3-721d-4f34-80e5-57657b6cbc27", null)]
-        public void ModTitle_WhenConstructorParameterIsNull_ThrowsArgumentNullException(String dewIt, Guid languageId, String title)
+        [InlineData(null, "Scott's Uber Test GeModden")]
+        [InlineData("DEWIT", null)]
+        public void ModTitle_WhenConstructorParameterIsNull_ThrowsArgumentNullException(String dewIt, String title)
         {
             Mod testMod = null;
-
             if(dewIt == "DEWIT")
             {
-
                 testMod = _testMod;
             }
-            
+
             Assert.Throws<ArgumentNullException>(() => new ModTitle(
                 Mod: testMod,
-                LanguageId: languageId,
-                Title: "Scott's Uber Test GeModden"));
+                LanguageId: new Guid("382c74c3-721d-4f34-80e5-57657b6cbc27"),
+                Title: title));
         }
     }
 }

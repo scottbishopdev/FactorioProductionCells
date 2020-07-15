@@ -7,20 +7,22 @@ namespace FactorioProductionCells.Domain.ValueObjects
 {
     public class FactorioVersion : ValueObject, IComparable
     {
-        public const String FactorioVersionStringCapturePattern = @"^(\d+)\.(\d+)\$";
+        public const String FactorioVersionStringCapturePattern = @"^(-?\d+)\.(-?\d+)$";
 
         private FactorioVersion() {}
 
         public static FactorioVersion For(String factorioVersionString)
         {
-            factorioVersionString = factorioVersionString?.Trim();
+            if (factorioVersionString == null) throw new ArgumentNullException("factorioVersionString", "A value for the Factorio version must be provided.");
+            
+            factorioVersionString = factorioVersionString.Trim();
 
             Regex factorioVersionStringCaptureRegex = new Regex(FactorioVersion.FactorioVersionStringCapturePattern);
             Match match = factorioVersionStringCaptureRegex.Match(factorioVersionString);            
-            if (!match.Success) throw new ArgumentException($"Unable to parse \"{factorioVersionString}\" to a valid ReleaseFileName due to formatting.", "factorioVersionString");
+            if (!match.Success) throw new ArgumentException($"Unable to parse \"{factorioVersionString}\" to a valid FactorioVersion due to formatting.", "factorioVersionString");
 
-            Int32 majorValue = Convert.ToInt32(match.Groups[0].Value);
-            Int32 minorValue = Convert.ToInt32(match.Groups[1].Value);
+            Int32 majorValue = Convert.ToInt32(match.Groups[1].Value);
+            Int32 minorValue = Convert.ToInt32(match.Groups[2].Value);
 
             if (majorValue < 0 || minorValue < 0) throw new ArgumentOutOfRangeException($"Unable to parse \"{majorValue}.{minorValue}\" into a FactorioVersion - version parts must be positive.", "factorioVersionString");
 
@@ -34,12 +36,12 @@ namespace FactorioProductionCells.Domain.ValueObjects
         public Int32 Major { get; private set; }
         public Int32 Minor { get; private set; }
 
-        public static implicit operator string(FactorioVersion version)
+        public static implicit operator String(FactorioVersion version)
         {
             return version.ToString();
         }
 
-        public static explicit operator FactorioVersion(string versionString)
+        public static explicit operator FactorioVersion(String versionString)
         {
             return For(versionString);
         }
@@ -50,12 +52,12 @@ namespace FactorioProductionCells.Domain.ValueObjects
             
             return base.Equals(obj);
         }
-
+        
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
-
+        
         public static bool operator ==(FactorioVersion left, FactorioVersion right)
         {
             return ValueObject.EqualOperator(left, right);
@@ -69,27 +71,27 @@ namespace FactorioProductionCells.Domain.ValueObjects
         public static bool operator >(FactorioVersion left, FactorioVersion right)
         {
             return left.Major > right.Major
-                || (left.Major == right.Major && left.Minor > left.Minor);
+                || (left.Major == right.Major && left.Minor > right.Minor);
         }
 
         public static bool operator >=(FactorioVersion left, FactorioVersion right)
         {
             return left.Equals(right)
                 || left.Major > right.Major
-                || (left.Major == right.Major && left.Minor > left.Minor);
+                || (left.Major == right.Major && left.Minor > right.Minor);
         }
 
         public static bool operator <(FactorioVersion left, FactorioVersion right)
         {
             return left.Major < right.Major
-                || (left.Major == right.Major && left.Minor < left.Minor);
+                || (left.Major == right.Major && left.Minor < right.Minor);
         }
 
         public static bool operator <=(FactorioVersion left, FactorioVersion right)
         {
             return left.Equals(right)
                 || left.Major < right.Major
-                || (left.Major == right.Major && left.Minor < left.Minor);
+                || (left.Major == right.Major && left.Minor < right.Minor);
         }
 
         public int CompareTo(Object obj)
@@ -108,7 +110,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return $"{Major}.{Minor}";
         }
 
-        protected override IEnumerable<object> GetAtomicValues()
+        public override IEnumerable<object> GetAtomicValues()
         {
             yield return Major;
             yield return Minor;
