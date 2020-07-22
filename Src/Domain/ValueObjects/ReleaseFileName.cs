@@ -8,27 +8,33 @@ namespace FactorioProductionCells.Domain.ValueObjects
 {
     public class ReleaseFileName : ValueObject
     {
-        public static String ReleaseFileNameStringCapturePattern = @"^([\S]{1," + Mod.NameLength.ToString() + @"})_([0-9]+\.[0-9]+\.[0-9]+)\.zip$";
+        public const String ValidModNameCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_ .";
+        public static String ReleaseFileNameStringCapturePattern = @"^([" + ValidModNameCharacters.Replace("-", "\\-") + @"]{1,})_(-?\d+\.-?\d+\.-?\d+)\.zip$";
 
         private ReleaseFileName() {}
 
-        public static ReleaseFileName For(string releaseFileNameString)
+        public static ReleaseFileName For(String releaseFileNameString)
         {
-            releaseFileNameString = releaseFileNameString?.Trim();
+            if (releaseFileNameString == null) throw new ArgumentNullException("releaseFileNameString", "A value for the release file name must be provided.");
 
             Regex releaseFileNameCaptureRegex = new Regex(ReleaseFileName.ReleaseFileNameStringCapturePattern);
-            Match match = releaseFileNameCaptureRegex.Match(releaseFileNameString);            
+            Match match = releaseFileNameCaptureRegex.Match(releaseFileNameString.Trim());            
             if(!match.Success) throw new ArgumentException($"Unable to parse \"{releaseFileNameString}\" to a valid ReleaseFileName due to formatting.", "releaseFileNameString");
+
+            String modName = match.Groups[1].Value;
+            String modVersionString = match.Groups[2].Value;
+
+            if (modName.Length > Mod.NameLength) throw new ArgumentException($"The mod name specified exceeds the maximum length of {Mod.NameLength}.", "releaseFileNameString");
 
             return new ReleaseFileName
             {
-                ModName = match.Groups[0].Value,
-                Version = ModVersion.For(match.Groups[1].Value)
+                ModName = modName,
+                ModVersion = ModVersion.For(modVersionString)
             };
         }
 
         public String ModName { get; private set; }
-        public ModVersion Version { get; private set; }
+        public ModVersion ModVersion { get; private set; }
 
         public static implicit operator string(ReleaseFileName releaseFileName)
         {
@@ -64,13 +70,13 @@ namespace FactorioProductionCells.Domain.ValueObjects
 
         public override string ToString()
         {
-            return $"{ModName}_{Version.ToString()}.zip";
+            return $"{ModName}_{ModVersion.ToString()}.zip";
         }
 
-        protected override IEnumerable<object> GetAtomicValues()
+        public override IEnumerable<object> GetAtomicValues()
         {
             yield return ModName;
-            yield return Version;
+            yield return ModVersion;
         }
     }
 }

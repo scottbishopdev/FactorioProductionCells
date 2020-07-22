@@ -15,7 +15,13 @@ namespace FactorioProductionCells.Domain.Entities
             this.Name = Enum.GetName(typeof(DependencyTypeId), enumId);
         }
 
-        public DependencyType(int intId) : this((DependencyTypeId)intId) {}
+        public DependencyType(int intId)
+        {
+            if(!Enum.IsDefined(typeof(DependencyTypeId), intId)) throw new ArgumentOutOfRangeException("intId", $"Unable to parse the supplied id {intId} into a DependencyType.");
+
+            this.Id = (DependencyTypeId)intId;
+            this.Name = Enum.GetName(typeof(DependencyTypeId), (DependencyTypeId)intId);
+        }
 
         public static DependencyType For(String dependencyTypeString)
         {
@@ -32,7 +38,7 @@ namespace FactorioProductionCells.Domain.Entities
                 case "":
                     return new DependencyType(DependencyTypeId.Required);
                 default:
-                    throw new ArgumentException($"The specified string \"{dependencyTypeString}\" could not be parsed into a valid DependencyType."  , "dependencyTypeString");
+                    throw new ArgumentException($"The specified string \"{dependencyTypeString}\" could not be parsed into a valid DependencyType.", "dependencyTypeString");
             }
         }
 

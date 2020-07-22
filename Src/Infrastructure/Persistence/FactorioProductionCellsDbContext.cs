@@ -30,12 +30,12 @@ namespace FactorioProductionCells.Infrastructure.Persistence
         // TODO: Some of these (e.g. dependencies) probably don't need to be queried directly and can be solely accessed through other entities. I'm concerned
         // that the migration system might not puck up on schema changes if those DbSets are removed, though.
         public DbSet<Mod> Mods { get; set; }
-        public DbSet<Release> Releases { get; set; }
+        //public DbSet<Release> Releases { get; set; }
         public DbSet<Language> Languages { get; set; }
-        public DbSet<ModTitle> ModTitles { get; set; }
-        public DbSet<Dependency> Dependencies { get; set; }
-        public DbSet<DependencyType> DependencyTypes { get; set; }
-        public DbSet<DependencyComparisonType> DependencyComparisonTypes { get; set; }
+        //public DbSet<ModTitle> ModTitles { get; set; }
+        //public DbSet<Dependency> Dependencies { get; set; }
+        //public DbSet<DependencyType> DependencyTypes { get; set; }
+        //public DbSet<DependencyComparisonType> DependencyComparisonTypes { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

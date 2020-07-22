@@ -31,7 +31,7 @@ namespace FactorioProductionCells.Infrastructure.Services.ModPortalService.DTOs
                 }
                 else
                 {
-                    throw new ArgumentException("This Mod already contains one or more releases, so LatestRelease cannot be set.");
+                    throw new ArgumentException("This Mod already contains one or more releases, so LatestRelease cannot be set.", "value");
                 }
             }
         }

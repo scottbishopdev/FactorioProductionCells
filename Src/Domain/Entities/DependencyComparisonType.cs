@@ -15,7 +15,13 @@ namespace FactorioProductionCells.Domain.Entities
             this.Name = Enum.GetName(typeof(DependencyComparisonTypeId), enumId);
         }
 
-        public DependencyComparisonType(int intId) : this((DependencyComparisonTypeId)intId) {}
+        public DependencyComparisonType(int intId)
+        {
+            if(!Enum.IsDefined(typeof(DependencyComparisonTypeId), intId)) throw new ArgumentOutOfRangeException("intId", $"Unable to parse the supplied id {intId} into a DependencyComparisonType.");
+
+            this.Id = (DependencyComparisonTypeId)intId;
+            this.Name = Enum.GetName(typeof(DependencyComparisonTypeId), (DependencyComparisonTypeId)intId);
+        }
 
         public static DependencyComparisonType For(String dependencyComparisonTypeString)
         {
@@ -34,7 +40,7 @@ namespace FactorioProductionCells.Domain.Entities
                 case "<=":
                     return new DependencyComparisonType(DependencyComparisonTypeId.LessThanOrEqualTo);
                 default:
-                    throw new ArgumentException($"The specified string \"{dependencyComparisonTypeString}\" could not be parsed into a valid DependencyComparisonType."  , "dependencyComparisonTypeString");
+                    throw new ArgumentException($"The specified string \"{dependencyComparisonTypeString}\" could not be parsed into a valid DependencyComparisonType.", "dependencyComparisonTypeString");
             }
         }
 

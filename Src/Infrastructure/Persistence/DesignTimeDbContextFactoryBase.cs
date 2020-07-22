@@ -20,7 +20,7 @@ namespace FactorioProductionCells.Infrastructure.Persistence
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                throw new ArgumentException($"The provided connection string is null or empty.");
+                throw new ArgumentException($"The provided connection string is null or empty.", "connectionString");
             }
 
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();

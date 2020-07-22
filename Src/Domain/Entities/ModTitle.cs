@@ -7,17 +7,15 @@ namespace FactorioProductionCells.Domain.Entities
     public class ModTitle : AuditableEntity
     {
         public const Int32 TitleLength = 200;
-        
         private ModTitle() {}
 
-        public ModTitle(Mod Mod, Guid LanguageId, String Title)
+        public ModTitle(Language Language, String Title)
         {
-            ObjectValidator.ValidateRequiredObject(Mod, nameof(Mod));
-            ObjectValidator.ValidateRequiredObject(LanguageId, nameof(LanguageId));
+            ObjectValidator.ValidateRequiredObject(Language, nameof(Language));
             StringValidator.ValidateRequiredStringWithMaxLength(Title, nameof(Title), ModTitle.TitleLength);
             
-            this.Mod = Mod;
-            this.LanguageId = LanguageId;
+            this.Language = Language;
+            this.LanguageId = Language.Id;
             this.Title = Title;
         }
 
