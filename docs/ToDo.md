@@ -14,4 +14,10 @@ ToDo  List
 * Look into whether or not DbSets for entities that don't need to be directly queries need to exist on the DbContext. I'm worried that schema changes might not be picked up for those entities if I remove them.
 * Determine if there's a way to *safely* execute Lua scripts from mods on the server side. If this isn't possible, is there a safe way to execute them on the clients?
 * Look at Web Storage API for client-side storage of user data without the need for a login/account.
-* Look into whether or not a maliciously constructed mod name could be used as an attack vector for some kind of injection attack.
+* Look into whether or not a maliciously constructed mod name could be used as a vector for some kind of injection attack.
+* Look into FluentValidation to see if wer can replace the existing validation classes in the Domain layer.
+* See if there's a good way to either combine the various string generation methods in the test classes, or a method in an existing library that can easily create strings for us.
+* Integration Test Ideas:
+  * Make sure Database starts with default users
+  * Make sure Database starts with default language
+  * Ensure messages can be added to RabbitMQ

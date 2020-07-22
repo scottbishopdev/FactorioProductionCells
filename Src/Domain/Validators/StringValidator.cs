@@ -13,7 +13,7 @@ namespace FactorioProductionCells.Domain.Validators
 
         public static void ValidateStringMaxLength(String value, String propertyName, Int32 maxLength)
         {
-            if(value.Length > maxLength) throw new ArgumentOutOfRangeException($"{propertyName} must not exceed {maxLength} characters.", propertyName);
+            if(value.Length > maxLength) throw new ArgumentOutOfRangeException(propertyName, $"{propertyName} must not exceed {maxLength} characters.");
         }
 
         public static void ValidateRequiredStringWithMaxLength(String value, String propertyName, Int32 maxLength)

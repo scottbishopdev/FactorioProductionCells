@@ -12,7 +12,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
 
             migrationBuilder.CreateTable(
-                name: "DependencyComparisonTypes",
+                name: "DependencyComparisonType",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
@@ -20,11 +20,11 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DependencyComparisonTypes", x => x.Id);
+                    table.PrimaryKey("PK_DependencyComparisonType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DependencyTypes",
+                name: "DependencyType",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
@@ -32,7 +32,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DependencyTypes", x => x.Id);
+                    table.PrimaryKey("PK_DependencyType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,7 +171,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ModTitles",
+                name: "ModTitle",
                 columns: table => new
                 {
                     ModId = table.Column<Guid>(nullable: false),
@@ -184,27 +184,27 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ModTitles", x => new { x.ModId, x.LanguageId });
+                    table.PrimaryKey("PK_ModTitle", x => new { x.ModId, x.LanguageId });
                     table.ForeignKey(
-                        name: "FK_ModTitles_Users_AddedBy",
+                        name: "FK_ModTitle_Users_AddedBy",
                         column: x => x.AddedBy,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ModTitles_Languages_LanguageId",
+                        name: "FK_ModTitle_Languages_LanguageId",
                         column: x => x.LanguageId,
                         principalTable: "Languages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ModTitles_Users_LastModifiedBy",
+                        name: "FK_ModTitle_Users_LastModifiedBy",
                         column: x => x.LastModifiedBy,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ModTitles_Mods_ModId",
+                        name: "FK_ModTitle_Mods_ModId",
                         column: x => x.ModId,
                         principalTable: "Mods",
                         principalColumn: "Id",
@@ -212,7 +212,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Releases",
+                name: "Release",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false, defaultValueSql: "uuid_generate_v4()"),
@@ -222,36 +222,36 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     LastModified = table.Column<DateTime>(nullable: true),
                     ModId = table.Column<Guid>(nullable: false),
                     ReleasedAt = table.Column<DateTime>(nullable: false),
-                    Sha1 = table.Column<string>(maxLength: 50, nullable: false),
-                    Version_Major = table.Column<int>(nullable: true),
-                    Version_Minor = table.Column<int>(nullable: true),
-                    Version_Patch = table.Column<int>(nullable: true),
+                    Sha1 = table.Column<string>(maxLength: 40, nullable: false),
+                    ModVersion_Major = table.Column<int>(nullable: true),
+                    ModVersion_Minor = table.Column<int>(nullable: true),
+                    ModVersion_Patch = table.Column<int>(nullable: true),
                     FactorioVersion_Major = table.Column<int>(nullable: true),
                     FactorioVersion_Minor = table.Column<int>(nullable: true),
-                    DownloadUrl_ModName = table.Column<string>(maxLength: 200, nullable: true),
-                    DownloadUrl_ReleaseToken = table.Column<string>(maxLength: 24, nullable: true),
+                    ReleaseDownloadUrl_ModName = table.Column<string>(maxLength: 200, nullable: true),
+                    ReleaseDownloadUrl_ReleaseToken = table.Column<string>(maxLength: 24, nullable: true),
                     ReleaseFileName_ModName = table.Column<string>(maxLength: 200, nullable: true),
-                    ReleaseFileName_Version_Major = table.Column<int>(nullable: true),
-                    ReleaseFileName_Version_Minor = table.Column<int>(nullable: true),
-                    ReleaseFileName_Version_Patch = table.Column<int>(nullable: true)
+                    ReleaseFileName_ModVersion_Major = table.Column<int>(nullable: true),
+                    ReleaseFileName_ModVersion_Minor = table.Column<int>(nullable: true),
+                    ReleaseFileName_ModVersion_Patch = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Releases", x => x.Id);
+                    table.PrimaryKey("PK_Release", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Releases_Users_AddedBy",
+                        name: "FK_Release_Users_AddedBy",
                         column: x => x.AddedBy,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Releases_Users_LastModifiedBy",
+                        name: "FK_Release_Users_LastModifiedBy",
                         column: x => x.LastModifiedBy,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Releases_Mods_ModId",
+                        name: "FK_Release_Mods_ModId",
                         column: x => x.ModId,
                         principalTable: "Mods",
                         principalColumn: "Id",
@@ -259,7 +259,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dependencies",
+                name: "Dependency",
                 columns: table => new
                 {
                     ReleaseId = table.Column<Guid>(nullable: false),
@@ -277,47 +277,47 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dependencies", x => new { x.ReleaseId, x.DependentModId });
+                    table.PrimaryKey("PK_Dependency", x => new { x.ReleaseId, x.DependentModId });
                     table.ForeignKey(
-                        name: "FK_Dependencies_Users_AddedBy",
+                        name: "FK_Dependency_Users_AddedBy",
                         column: x => x.AddedBy,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Dependencies_DependencyComparisonTypes_DependencyComparison~",
+                        name: "FK_Dependency_DependencyComparisonType_DependencyComparisonTyp~",
                         column: x => x.DependencyComparisonTypeId,
-                        principalTable: "DependencyComparisonTypes",
+                        principalTable: "DependencyComparisonType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Dependencies_DependencyTypes_DependencyTypeId",
+                        name: "FK_Dependency_DependencyType_DependencyTypeId",
                         column: x => x.DependencyTypeId,
-                        principalTable: "DependencyTypes",
+                        principalTable: "DependencyType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Dependencies_Mods_DependentModId",
+                        name: "FK_Dependency_Mods_DependentModId",
                         column: x => x.DependentModId,
                         principalTable: "Mods",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Dependencies_Users_LastModifiedBy",
+                        name: "FK_Dependency_Users_LastModifiedBy",
                         column: x => x.LastModifiedBy,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Dependencies_Releases_ReleaseId",
+                        name: "FK_Dependency_Release_ReleaseId",
                         column: x => x.ReleaseId,
-                        principalTable: "Releases",
+                        principalTable: "Release",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "DependencyComparisonTypes",
+                table: "DependencyComparisonType",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
@@ -329,7 +329,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "DependencyTypes",
+                table: "DependencyType",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
@@ -340,28 +340,28 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dependencies_AddedBy",
-                table: "Dependencies",
+                name: "IX_Dependency_AddedBy",
+                table: "Dependency",
                 column: "AddedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dependencies_DependencyComparisonTypeId",
-                table: "Dependencies",
+                name: "IX_Dependency_DependencyComparisonTypeId",
+                table: "Dependency",
                 column: "DependencyComparisonTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dependencies_DependencyTypeId",
-                table: "Dependencies",
+                name: "IX_Dependency_DependencyTypeId",
+                table: "Dependency",
                 column: "DependencyTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dependencies_DependentModId",
-                table: "Dependencies",
+                name: "IX_Dependency_DependentModId",
+                table: "Dependency",
                 column: "DependentModId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dependencies_LastModifiedBy",
-                table: "Dependencies",
+                name: "IX_Dependency_LastModifiedBy",
+                table: "Dependency",
                 column: "LastModifiedBy");
 
             migrationBuilder.CreateIndex(
@@ -388,33 +388,33 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModTitles_AddedBy",
-                table: "ModTitles",
+                name: "IX_ModTitle_AddedBy",
+                table: "ModTitle",
                 column: "AddedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModTitles_LanguageId",
-                table: "ModTitles",
+                name: "IX_ModTitle_LanguageId",
+                table: "ModTitle",
                 column: "LanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ModTitles_LastModifiedBy",
-                table: "ModTitles",
+                name: "IX_ModTitle_LastModifiedBy",
+                table: "ModTitle",
                 column: "LastModifiedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Releases_AddedBy",
-                table: "Releases",
+                name: "IX_Release_AddedBy",
+                table: "Release",
                 column: "AddedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Releases_LastModifiedBy",
-                table: "Releases",
+                name: "IX_Release_LastModifiedBy",
+                table: "Release",
                 column: "LastModifiedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Releases_ModId",
-                table: "Releases",
+                name: "IX_Release_ModId",
+                table: "Release",
                 column: "ModId");
 
             migrationBuilder.CreateIndex(
@@ -447,10 +447,10 @@ namespace FactorioProductionCells.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Dependencies");
+                name: "Dependency");
 
             migrationBuilder.DropTable(
-                name: "ModTitles");
+                name: "ModTitle");
 
             migrationBuilder.DropTable(
                 name: "UserClaims");
@@ -462,13 +462,13 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "DependencyComparisonTypes");
+                name: "DependencyComparisonType");
 
             migrationBuilder.DropTable(
-                name: "DependencyTypes");
+                name: "DependencyType");
 
             migrationBuilder.DropTable(
-                name: "Releases");
+                name: "Release");
 
             migrationBuilder.DropTable(
                 name: "Mods");

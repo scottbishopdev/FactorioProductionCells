@@ -17,7 +17,7 @@ namespace FactorioProductionCells.Domain.Entities
 
         public DependencyComparisonType(int intId)
         {
-            if(!Enum.IsDefined(typeof(DependencyComparisonTypeId), intId)) throw new ArgumentOutOfRangeException($"Unable to parse the supplied id {intId} into a DependencyComparisonType.");
+            if(!Enum.IsDefined(typeof(DependencyComparisonTypeId), intId)) throw new ArgumentOutOfRangeException("intId", $"Unable to parse the supplied id {intId} into a DependencyComparisonType.");
 
             this.Id = (DependencyComparisonTypeId)intId;
             this.Name = Enum.GetName(typeof(DependencyComparisonTypeId), (DependencyComparisonTypeId)intId);

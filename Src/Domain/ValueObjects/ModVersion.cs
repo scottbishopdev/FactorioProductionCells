@@ -14,18 +14,16 @@ namespace FactorioProductionCells.Domain.ValueObjects
         public static ModVersion For(String modVersionString)
         {
             if (modVersionString == null) throw new ArgumentNullException("modVersionString", "A value for the mod version must be provided.");
-            
-            modVersionString = modVersionString.Trim();
 
             Regex modVersionStringCaptureRegex = new Regex(ModVersion.ModVersionStringCapturePattern);
-            Match match = modVersionStringCaptureRegex.Match(modVersionString);            
+            Match match = modVersionStringCaptureRegex.Match(modVersionString.Trim());            
             if(!match.Success) throw new ArgumentException($"Unable to parse \"{modVersionString}\" to a valid ReleaseFileName due to formatting.", "modVersionString");
 
             Int32 majorValue = Convert.ToInt32(match.Groups[1].Value);
             Int32 minorValue = Convert.ToInt32(match.Groups[2].Value);
             Int32 patchValue = Convert.ToInt32(match.Groups[3].Value);
 
-            if (majorValue < 0 || minorValue < 0 || patchValue < 0) throw new ArgumentOutOfRangeException($"Unable to parse \"{majorValue}.{minorValue}\" into a ModVersion - version parts must be positive.", "factorioVersionString");
+            if (majorValue < 0 || minorValue < 0 || patchValue < 0) throw new ArgumentOutOfRangeException("modVersionString", $"Unable to parse \"{modVersionString}\" into a ModVersion - version parts must be positive.");
 
             return new ModVersion
             {
@@ -39,7 +37,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
         public Int32 Minor { get; private set; }
         public Int32 Patch { get; private set; }
 
-        public static implicit operator string(ModVersion version)
+        public static implicit operator String(ModVersion version)
         {
             return version.ToString();
         }

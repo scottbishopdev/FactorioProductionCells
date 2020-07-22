@@ -17,7 +17,7 @@ namespace FactorioProductionCells.Domain.Entities
 
         public DependencyType(int intId)
         {
-            if(!Enum.IsDefined(typeof(DependencyTypeId), intId)) throw new ArgumentOutOfRangeException($"Unable to parse the supplied id {intId} into a DependencyType.");
+            if(!Enum.IsDefined(typeof(DependencyTypeId), intId)) throw new ArgumentOutOfRangeException("intId", $"Unable to parse the supplied id {intId} into a DependencyType.");
 
             this.Id = (DependencyTypeId)intId;
             this.Name = Enum.GetName(typeof(DependencyTypeId), (DependencyTypeId)intId);

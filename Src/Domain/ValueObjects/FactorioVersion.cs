@@ -14,17 +14,15 @@ namespace FactorioProductionCells.Domain.ValueObjects
         public static FactorioVersion For(String factorioVersionString)
         {
             if (factorioVersionString == null) throw new ArgumentNullException("factorioVersionString", "A value for the Factorio version must be provided.");
-            
-            factorioVersionString = factorioVersionString.Trim();
 
             Regex factorioVersionStringCaptureRegex = new Regex(FactorioVersion.FactorioVersionStringCapturePattern);
-            Match match = factorioVersionStringCaptureRegex.Match(factorioVersionString);            
+            Match match = factorioVersionStringCaptureRegex.Match(factorioVersionString.Trim());            
             if (!match.Success) throw new ArgumentException($"Unable to parse \"{factorioVersionString}\" to a valid FactorioVersion due to formatting.", "factorioVersionString");
 
             Int32 majorValue = Convert.ToInt32(match.Groups[1].Value);
             Int32 minorValue = Convert.ToInt32(match.Groups[2].Value);
 
-            if (majorValue < 0 || minorValue < 0) throw new ArgumentOutOfRangeException($"Unable to parse \"{majorValue}.{minorValue}\" into a FactorioVersion - version parts must be positive.", "factorioVersionString");
+            if (majorValue < 0 || minorValue < 0) throw new ArgumentOutOfRangeException( "factorioVersionString", $"Unable to parse \"{factorioVersionString}\" into a FactorioVersion - version parts must be positive.");
 
             return new FactorioVersion
             {

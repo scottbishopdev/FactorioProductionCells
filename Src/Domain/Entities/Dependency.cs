@@ -9,19 +9,18 @@ namespace FactorioProductionCells.Domain.Entities
 {
     public class Dependency : AuditableEntity
     {
-        public static String DependencyStringCapturePattern = $"^(\\?|!|\\(\\?\\))? ?([\\S]{{1,{Mod.NameLength}}}) (>=|>|=|<=|<) ([0-9]+\\.[0-9]+\\.[0-9]+)$";
+        public const String ValidModNameCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_ .";
+        public static String DependencyStringCapturePattern = @"^(\?|!|\(\?\))? ?([" + ValidModNameCharacters.Replace("-", "\\-") + @"]{1,}) (>=|>|=|<=|<) (-?\d+\.-?\d+\.-?\d+)$";
         
         private Dependency() {}
 
-        public Dependency(Release Release, String DependentModName, DependencyType DependencyType, DependencyComparisonType DependencyComparisonType, ModVersion DependentModVersion)
+        public Dependency(String DependentModName, DependencyType DependencyType, DependencyComparisonType DependencyComparisonType, ModVersion DependentModVersion)
         {
-            ObjectValidator.ValidateRequiredObject(Release, nameof(Release));
             ObjectValidator.ValidateRequiredObject(DependencyType, nameof(DependencyType));
             StringValidator.ValidateRequiredStringWithMaxLength(DependentModName, nameof(DependentModName), Mod.NameLength);
             ObjectValidator.ValidateRequiredObject(DependencyComparisonType, nameof(DependencyComparisonType));
             ObjectValidator.ValidateRequiredObject(DependentModVersion, nameof(DependentModVersion));
 
-            this.Release = Release;
             this.DependencyType = DependencyType;
             this.DependentModName = DependentModName;
             this.DependencyComparisonType = DependencyComparisonType;
@@ -30,16 +29,16 @@ namespace FactorioProductionCells.Domain.Entities
 
         public static Dependency For(String dependencyString)
         {
-            dependencyString = dependencyString?.Trim();
-
             Regex dependencyStringCaptureRegex = new Regex(Dependency.DependencyStringCapturePattern);
-            Match match = dependencyStringCaptureRegex.Match(dependencyString);
+            Match match = dependencyStringCaptureRegex.Match(dependencyString?.Trim());
             if(!match.Success) throw new ArgumentException($"Unable to parse \"{dependencyString}\" to a valid Dependency due to formatting.", "dependencyString");
 
             String dependencyTypeValue = match.Groups[1].Value;
             String dependentModNameValue = match.Groups[2].Value;
             String dependencyComparisonTypeValue = match.Groups[3].Value;
             String modVersionValue = match.Groups[4].Value;
+
+            if (dependentModNameValue.Length > Mod.NameLength) throw new ArgumentException($"The mod name specified exceeds the maximum length of {Mod.NameLength}.", "dependencyString");
 
             return new Dependency
             {

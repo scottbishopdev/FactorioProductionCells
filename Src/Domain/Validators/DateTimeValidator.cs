@@ -2,7 +2,6 @@ using System;
 
 namespace FactorioProductionCells.Domain.Validators
 {
-    //TODO: Look into Fluent Validation and see if these are already implemented there, or if they should be implemented using it. (IValidator?)
     public static class DateTimeValidator
     {
         public static void ValidateRequiredDateTime(DateTime value, String propertyName)

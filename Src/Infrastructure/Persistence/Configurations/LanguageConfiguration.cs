@@ -16,6 +16,7 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
             builder.Property(l => l.EnglishName).HasMaxLength(Language.EnglishNameLength).IsRequired();
             builder.Property(l => l.LanguageTag).HasMaxLength(Language.LanguageTagLength).IsRequired();
             builder.Property(l => l.IsDefault).IsRequired();
+            builder.Ignore(l => l.Culture);
 
             // Constraints
             builder.HasIndex(l => l.IsDefault).IsUnique().HasFilter("\"IsDefault\" = true");

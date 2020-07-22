@@ -63,7 +63,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasIndex("LastModifiedBy");
 
-                    b.ToTable("Dependencies");
+                    b.ToTable("Dependency");
                 });
 
             modelBuilder.Entity("FactorioProductionCells.Domain.Entities.DependencyComparisonType", b =>
@@ -78,7 +78,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DependencyComparisonTypes");
+                    b.ToTable("DependencyComparisonType");
 
                     b.HasData(
                         new
@@ -120,7 +120,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DependencyTypes");
+                    b.ToTable("DependencyType");
 
                     b.HasData(
                         new
@@ -243,7 +243,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasIndex("LastModifiedBy");
 
-                    b.ToTable("ModTitles");
+                    b.ToTable("ModTitle");
                 });
 
             modelBuilder.Entity("FactorioProductionCells.Domain.Entities.Release", b =>
@@ -273,8 +273,8 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.Property<string>("Sha1")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("character varying(40)")
+                        .HasMaxLength(40);
 
                     b.HasKey("Id");
 
@@ -284,7 +284,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasIndex("ModId");
 
-                    b.ToTable("Releases");
+                    b.ToTable("Release");
                 });
 
             modelBuilder.Entity("FactorioProductionCells.Infrastructure.Identity.User", b =>
@@ -475,7 +475,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                             b1.HasKey("DependencyReleaseId", "DependencyDependentModId");
 
-                            b1.ToTable("Dependencies");
+                            b1.ToTable("Dependency");
 
                             b1.WithOwner()
                                 .HasForeignKey("DependencyReleaseId", "DependencyDependentModId");
@@ -552,13 +552,13 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                             b1.HasKey("ReleaseId");
 
-                            b1.ToTable("Releases");
+                            b1.ToTable("Release");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReleaseId");
                         });
 
-                    b.OwnsOne("FactorioProductionCells.Domain.ValueObjects.ModVersion", "Version", b1 =>
+                    b.OwnsOne("FactorioProductionCells.Domain.ValueObjects.ModVersion", "ModVersion", b1 =>
                         {
                             b1.Property<Guid>("ReleaseId")
                                 .ValueGeneratedOnAdd()
@@ -575,13 +575,13 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                             b1.HasKey("ReleaseId");
 
-                            b1.ToTable("Releases");
+                            b1.ToTable("Release");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReleaseId");
                         });
 
-                    b.OwnsOne("FactorioProductionCells.Domain.ValueObjects.ReleaseDownloadUrl", "DownloadUrl", b1 =>
+                    b.OwnsOne("FactorioProductionCells.Domain.ValueObjects.ReleaseDownloadUrl", "ReleaseDownloadUrl", b1 =>
                         {
                             b1.Property<Guid>("ReleaseId")
                                 .ValueGeneratedOnAdd()
@@ -597,7 +597,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                             b1.HasKey("ReleaseId");
 
-                            b1.ToTable("Releases");
+                            b1.ToTable("Release");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReleaseId");
@@ -615,12 +615,12 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                             b1.HasKey("ReleaseId");
 
-                            b1.ToTable("Releases");
+                            b1.ToTable("Release");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReleaseId");
 
-                            b1.OwnsOne("FactorioProductionCells.Domain.ValueObjects.ModVersion", "Version", b2 =>
+                            b1.OwnsOne("FactorioProductionCells.Domain.ValueObjects.ModVersion", "ModVersion", b2 =>
                                 {
                                     b2.Property<Guid>("ReleaseFileNameReleaseId")
                                         .ValueGeneratedOnAdd()
@@ -637,7 +637,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                                     b2.HasKey("ReleaseFileNameReleaseId");
 
-                                    b2.ToTable("Releases");
+                                    b2.ToTable("Release");
 
                                     b2.WithOwner()
                                         .HasForeignKey("ReleaseFileNameReleaseId");

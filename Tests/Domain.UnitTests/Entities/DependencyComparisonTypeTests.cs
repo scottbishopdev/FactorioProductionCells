@@ -65,7 +65,8 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         [InlineData(int.MinValue)]
         public void IntConstructor_WhenGivenInvalidId_ThrowsArgumentOutOfRangeException(int intId)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new DependencyComparisonType(intId));
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => new DependencyComparisonType(intId));
+            Assert.Equal($"Unable to parse the supplied id {intId} into a DependencyComparisonType. (Parameter 'intId')", exception.Message);
         }
         #endregion
         
@@ -105,7 +106,8 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         [InlineData(null)]
         public void For_WhenGivenInvalidString_ThrowsArgumentException(String dependencyComparisonTypeString)
         {
-            Assert.Throws<ArgumentException>(() => DependencyComparisonType.For(dependencyComparisonTypeString));
+            var exception = Assert.Throws<ArgumentException>(() => DependencyComparisonType.For(dependencyComparisonTypeString));
+            Assert.Equal($"The specified string \"{dependencyComparisonTypeString?.Trim()}\" could not be parsed into a valid DependencyComparisonType. (Parameter 'dependencyComparisonTypeString')", exception.Message);
         }
         #endregion
 

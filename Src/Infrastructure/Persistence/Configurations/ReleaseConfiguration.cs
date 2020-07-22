@@ -20,7 +20,7 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
             // This means that the database could store null values for these if something told it to, though that should be "impossible" via the service code
             // since we validate things to a gratuitous level. See these issues for more information: https://github.com/dotnet/efcore/issues/12100, https://github.com/dotnet/efcore/issues/13947
             builder.OwnsOne(
-                navigationExpression: r => r.Version,
+                navigationExpression: r => r.ModVersion,
                 buildAction: mv => {
                     mv.Property(mv => mv.Major);
                     mv.Property(mv => mv.Minor);
@@ -33,7 +33,7 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
                     fv.Property(fv => fv.Minor);
                 });
             builder.OwnsOne(
-                navigationExpression: r => r.DownloadUrl,
+                navigationExpression: r => r.ReleaseDownloadUrl,
                 buildAction: du => {
                     du.Property(du => du.ModName).HasMaxLength(Mod.NameLength);
                     du.Property(du => du.ReleaseToken).HasMaxLength(ReleaseDownloadUrl.ReleaseTokenLength);
@@ -44,7 +44,7 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
                     fn.Property(fn => fn.ModName).HasMaxLength(Mod.NameLength);
                     // VALUE OBJECT-CEPTION!
                     fn.OwnsOne(
-                        navigationExpression: fn => fn.Version,
+                        navigationExpression: fn => fn.ModVersion,
                         buildAction: mv => {
                             mv.Property(mv => mv.Major);
                             mv.Property(mv => mv.Minor);

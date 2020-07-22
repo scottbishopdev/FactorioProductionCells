@@ -8,9 +8,10 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
 {
     public class FactorioVersionTests
     {
-        private static FactorioVersion ZeroPointSeventeen = FactorioVersion.For("0.17");
-        private static FactorioVersion ZeroPointSeventeenClone = FactorioVersion.For("0.17");
-        private static FactorioVersion OnePointZero = FactorioVersion.For("1.0");
+        internal static FactorioVersion ZeroPointSeventeen = FactorioVersion.For("0.17");
+        internal static FactorioVersion ZeroPointEighteen = FactorioVersion.For("0.18");
+        internal static FactorioVersion ZeroPointSeventeenClone = FactorioVersion.For("0.17");
+        internal static FactorioVersion OnePointZero = FactorioVersion.For("1.0");
         private static List<Int32> integerValues = new List<Int32> { 0, 1, 2, Int32.MaxValue };
 
         #region For
@@ -32,7 +33,8 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         [InlineData("-2147483647.14")]
         public void For_WhenGivenStringWithNegativeMajorVersion_ThrowsArgumentOutOfRangeException(String factorioVersionString)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => FactorioVersion.For(factorioVersionString));
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => FactorioVersion.For(factorioVersionString));
+            Assert.Equal($"Unable to parse \"{factorioVersionString}\" into a FactorioVersion - version parts must be positive. (Parameter 'factorioVersionString')", exception.Message);
         }
 
         [Theory]
@@ -53,7 +55,8 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         [InlineData("14.-2147483647")]
         public void For_WhenGivenStringWithNegativeMinorVersion_ThrowsArgumentOutOfRangeException(String factorioVersionString)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => FactorioVersion.For(factorioVersionString));
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => FactorioVersion.For(factorioVersionString));
+            Assert.Equal($"Unable to parse \"{factorioVersionString}\" into a FactorioVersion - version parts must be positive. (Parameter 'factorioVersionString')", exception.Message);
         }
 
         [Theory]
@@ -65,13 +68,15 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         [InlineData("foo.bar")]
         public void For_WhenGivenInvalidFormat_ThrowsArgumentException(String factorioVersionString)
         {
-            Assert.Throws<ArgumentException>(() => FactorioVersion.For(factorioVersionString));
+            var exception = Assert.Throws<ArgumentException>(() => FactorioVersion.For(factorioVersionString));
+            Assert.Equal($"Unable to parse \"{factorioVersionString}\" to a valid FactorioVersion due to formatting. (Parameter 'factorioVersionString')", exception.Message);
         }
 
         [Fact]
-        public void For_WhenGivenInvalidFormat_ThrowsArgumentNullException()
+        public void For_WhenGivenNull_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => FactorioVersion.For(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => FactorioVersion.For(null));
+            Assert.Equal("A value for the Factorio version must be provided. (Parameter 'factorioVersionString')", exception.Message);
         }
         #endregion
 
@@ -111,7 +116,8 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         [MemberData(nameof(Equals_InvalidTypesData))]
         public void Equals_WhenProvidedDifferentType_ThrowsArgumentException(Object right)
         {
-            Assert.Throws<ArgumentException>(() => ZeroPointSeventeen.Equals(right));
+            var exception = Assert.Throws<ArgumentException>(() => ZeroPointSeventeen.Equals(right));
+            Assert.Equal("Unable to compare the specified object to a FactorioVersion. (Parameter 'obj')", exception.Message);
         }
         #endregion
 
@@ -123,7 +129,7 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         }
 
         [Fact]
-        public void GetHashCode_MatchingVersions_ReturnDifferentHashCode()
+        public void GetHashCode_NonMatchingVersions_ReturnDifferentHashCode()
         {
             Assert.NotEqual(ZeroPointSeventeen.GetHashCode(), OnePointZero.GetHashCode());
         }
@@ -249,8 +255,7 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         }
         #endregion
 
-        #region CompareTo
-        
+        #region CompareTo        
         [Theory]
         [MemberData(nameof(Comparison_LeftLowerData))]
         public void CompareTo_WhenProvidedLargerVersion_ReturnsNegativeOne(String left, String right)
@@ -276,7 +281,8 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         [MemberData(nameof(Equals_InvalidTypesData))]
         public void CompareTo_WhenProvidedDifferentType_ThrowsArgumentException(Object right)
         {
-            Assert.Throws<ArgumentException>(() => ZeroPointSeventeen.CompareTo(right));
+            var exception = Assert.Throws<ArgumentException>(() => ZeroPointSeventeen.CompareTo(right));
+            Assert.Equal("The specified object to compare is not a ModVersion. (Parameter 'obj')", exception.Message);
         }
         #endregion
 
@@ -290,7 +296,7 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
 
         #region GetAtomicValues
         [Fact]
-        public void GetAtomicValues_WhenGivenFactorioVersion_ReturnsCorrectString()
+        public void GetAtomicValues_WhenGivenFactorioVersion_ReturnsCorrectValues()
         {
             var atomicValues = ZeroPointSeventeen.GetAtomicValues();
             Assert.Equal(0, atomicValues.ElementAt(0));

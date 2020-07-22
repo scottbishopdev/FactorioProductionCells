@@ -105,7 +105,8 @@ namespace FactorioProductionCells.Domain.UnitTests.Common
         [Fact]
         public void EqualsObject_WhenGivenDifferentType_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(() => Sterling.Equals(new String("This should fail.")));
+            var exception = Assert.Throws<ArgumentException>(() => Sterling.Equals(new String("This should fail.")));
+            Assert.Equal("Unable to compare the specified object to a ValueObject. (Parameter 'obj')", exception.Message);
         }
 
         [Fact]
@@ -120,6 +121,12 @@ namespace FactorioProductionCells.Domain.UnitTests.Common
         public void GetHashCode_MatchingObjects_ReturnSameHashCode()
         {
             Assert.Equal(Sterling.GetHashCode(), KriegerBotSterling.GetHashCode());
+        }
+
+        [Fact]
+        public void GetHashCode_MatchingObjectsWithNull_ReturnSameHashCode()
+        {
+            Assert.Equal(JohnNull.GetHashCode(), JohnNullClone.GetHashCode());
         }
 
         [Fact]
