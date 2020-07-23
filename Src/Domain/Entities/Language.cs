@@ -9,7 +9,7 @@ namespace FactorioProductionCells.Domain.Entities
     {
         public const int EnglishNameLength = 100;
         public const int LanguageTagLength = 20;
-        
+
         private Language() {}
 
         public Language(String EnglishName, String LanguageTag, Boolean IsDefault = false)
@@ -19,7 +19,8 @@ namespace FactorioProductionCells.Domain.Entities
 
             this.EnglishName = EnglishName;
             this.LanguageTag = LanguageTag;
-            this.Culture = new CultureInfo(LanguageTag);
+            //this.Culture = new CultureInfo(LanguageTag);
+            this.Culture = CultureInfo.GetCultureInfoByIetfLanguageTag(LanguageTag);
             this.IsDefault = IsDefault;
         }
         
