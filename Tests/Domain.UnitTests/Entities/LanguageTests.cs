@@ -32,7 +32,8 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         [Fact]
         public void LanguageConstructor_WhenValidParameters_ReturnsCorrectCulture()
         {
-            Assert.Equal(new CultureInfo("en"), English.Culture);
+            // TODO: I should find a better way to accurately represent the culture we'll actually end up with here. (e.g. we give it "en", but check for "en-001")
+            Assert.Equal(new CultureInfo("en-001"), English.Culture);
         }
 
         [Fact]
@@ -119,7 +120,7 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
                 EnglishName: "English",
                 LanguageTag: languageTag,
                 IsDefault: false));
-            Assert.Equal($"Culture is not supported. (Parameter 'name')\r\n{languageTag} is an invalid culture identifier.", exception.Message);
+            Assert.Equal($"Culture is not supported. (Parameter 'LanguageTag'){Environment.NewLine}{languageTag} is an invalid culture identifier.", exception.Message);
         }
         #endregion
 
