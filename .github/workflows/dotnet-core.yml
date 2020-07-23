@@ -24,4 +24,4 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       #run: dotnet test --no-restore --verbosity normal
-      run: dotnet test --% /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,lcov\" /p:CoverletOutput=../TestResults\ /p:MergeWith=../TestResults\coverage.json /maxcpucount:1
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,lcov\" /p:CoverletOutput=../TestResults\ /p:MergeWith=../TestResults\coverage.json /maxcpucount:1
