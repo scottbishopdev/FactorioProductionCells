@@ -28,7 +28,7 @@ jobs:
 
     - name: Domain Unit Tests
       #run: dotnet test --no-restore --verbosity normal
-      run: dotnet test ~/Tests/Domain.UnitTests/Domain.UnitTests.csproj  /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,lcov,opencover\" /p:CoverletOutput=\"../TestResults\" /maxcpucount:1
+      run: dotnet test ./Tests/Domain.UnitTests/Domain.UnitTests.csproj  /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,lcov,opencover\" /p:CoverletOutput=\"../TestResults/\" /maxcpucount:1
 
     - name: Code Coverage
       uses: codecov/codecov-action@v1
@@ -37,4 +37,3 @@ jobs:
         file: TestResults/coverage.info
         flags: UnitTests
         fail_ci_if_error: true
-        
