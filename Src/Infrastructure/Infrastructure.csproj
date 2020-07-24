@@ -6,6 +6,10 @@
     <AssemblyName>FactorioProductionCells.Infrastructure</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>

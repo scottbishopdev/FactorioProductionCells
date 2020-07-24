@@ -6,6 +6,10 @@
     <AssemblyName>FactorioProductionCells.Application</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="FluentValidation" Version="9.0.1" />
