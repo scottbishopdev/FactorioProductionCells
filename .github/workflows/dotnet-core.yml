@@ -34,6 +34,6 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./TestResults/coverage.info,./TestResults/coverage.json,./TestResults/coverage.opencover.xml
+        files: ./Tests/TestResults/coverage.info,./Tests/TestResults/coverage.json,./Tests/TestResults/coverage.opencover.xml
         flags: UnitTests
         fail_ci_if_error: true
