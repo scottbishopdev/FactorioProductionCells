@@ -14,14 +14,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
+
     - name: Install dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --configuration Release --no-restore
+
     - name: Test
       #run: dotnet test --no-restore --verbosity normal
-      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,lcov\" /p:CoverletOutput=../TestResults\ /p:MergeWith=../TestResults\coverage.json /maxcpucount:1
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,lcov,opencover\" /p:CoverletOutput=../TestResults\ /p:MergeWith=../TestResults\coverage.json /maxcpucount:1
+
+    - name: Code Coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./TestResults/coverage.opencover.xml
+        flags: unittests
+        fail_ci_if_error: true

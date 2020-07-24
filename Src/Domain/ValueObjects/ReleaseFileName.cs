@@ -18,7 +18,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
             if (releaseFileNameString == null) throw new ArgumentNullException("releaseFileNameString", "A value for the release file name must be provided.");
 
             Regex releaseFileNameCaptureRegex = new Regex(ReleaseFileName.ReleaseFileNameStringCapturePattern);
-            Match match = releaseFileNameCaptureRegex.Match(releaseFileNameString.Trim());            
+            Match match = releaseFileNameCaptureRegex.Match(releaseFileNameString.Trim());
             if(!match.Success) throw new ArgumentException($"Unable to parse \"{releaseFileNameString}\" to a valid ReleaseFileName due to formatting.", "releaseFileNameString");
 
             String modName = match.Groups[1].Value;
