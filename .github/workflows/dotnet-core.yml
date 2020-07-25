@@ -36,7 +36,7 @@ jobs:
       #run: dotnet test ./Tests/Application.UnitTests/Application.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:CoverletOutput=\"../TestResults/UnitTests.json\" /p:MergeWith=\"../TestResults/UnitTests.json\" /maxcpucount:1
 
     - name: Infrastructure Unit Tests
-      run: dotnet test ./Tests/Infrastructure.UnitTests/Infrastructure.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/Infrastructure.UnitTests.xml\" /maxcpucount:1
+      run: dotnet test ./Tests/Infrastructure.UnitTests/Infrastructure.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/Infrastructure.UnitTests.xml\" /p:ExcludeByFile=\"Migrations/*.cs\" /maxcpucount:1
       #run: dotnet test ./Tests/Infrastructure.UnitTests/Infrastructure.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:CoverletOutput=\"../TestResults/UnitTests.json\" /p:MergeWith=\"../TestResults/UnitTests.json\" /maxcpucount:1
 
     - name: ModUpdateScheduler Unit Tests
