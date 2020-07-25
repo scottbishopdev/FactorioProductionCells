@@ -24,16 +24,15 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Domain Unit Tests
-      run: dotnet test ./Tests/Domain.UnitTests/Domain.UnitTests.csproj  /p:CollectCoverage=true /p:CoverletOutputFormat=\"json,lcov,opencover\" /p:CoverletOutput=\"../TestResults/\" /maxcpucount:1
+    - name: Unit Tests
+      #run: dotnet test ./Tests/Domain.UnitTests/Domain.UnitTests.csproj  /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover\" /p:CoverletOutput=\"../TestResults/Domain.opencover.xml\" /maxcpucount:1
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover\" /p:CoverletOutput=\"../TestResults/coverage.opencover.xml\" /maxcpucount:1
 
-    - name: Codecov is a stupid worthless piece of shit
-      run: ls -l
-
-    - name: Code Coverage
+    - name: Code Coverage Upload
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./Tests/TestResults/coverage.info,./Tests/TestResults/coverage.json,./Tests/TestResults/coverage.opencover.xml
+        #files: ./Tests/TestResults/coverage.info,./Tests/TestResults/coverage.json,./Tests/TestResults/Domain.opencover.xml
+        file: ./Tests/TestResults/coverage.opencover.xml
         flags: UnitTests
         fail_ci_if_error: true
