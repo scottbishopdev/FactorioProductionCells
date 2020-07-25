@@ -26,22 +26,27 @@ jobs:
 
     - name: Domain Unit Tests
       #run: dotnet test ./Tests/Domain.UnitTests/Domain.UnitTests.csproj  /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover\" /p:CoverletOutput=\"../TestResults/Domain.opencover.xml\" /maxcpucount:1
-      run: dotnet test ./Tests/Domain.UnitTests/Domain.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      #run: dotnet test ./Tests/Domain.UnitTests/Domain.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      run: dotnet test ./Tests/Domain.UnitTests/Domain.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:CoverletOutput=\"../TestResults/UnitTests.json\" /p:MergeWith=\"../TestResults/UnitTests.json\" /maxcpucount:1
 
     - name: Application Unit Tests
-      run: dotnet test ./Tests/Application.UnitTests/Application.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      #run: dotnet test ./Tests/Application.UnitTests/Application.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      run: dotnet test ./Tests/Application.UnitTests/Application.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.json\" /p:MergeWith=\"../TestResults/UnitTests.json\" /maxcpucount:1
 
     - name: Infrastructure Unit Tests
-      run: dotnet test ./Tests/Infrastructure.UnitTests/Infrastructure.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      ##run: dotnet test ./Tests/Infrastructure.UnitTests/Infrastructure.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      run: dotnet test ./Tests/Infrastructure.UnitTests/Infrastructure.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.json\" /p:MergeWith=\"../TestResults/UnitTests.json\" /maxcpucount:1
 
     - name: ModUpdateScheduler Unit Tests
-      run: dotnet test ./Tests/ModUpdateScheduler.UnitTests/ModUpdateScheduler.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      ##run: dotnet test ./Tests/ModUpdateScheduler.UnitTests/ModUpdateScheduler.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.opencover.xml\" /p:MergeWith=\"../TestResults/UnitTests.opencover.xml\" /maxcpucount:1
+      run: dotnet test ./Tests/ModUpdateScheduler.UnitTests/ModUpdateScheduler.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/UnitTests.json\" /p:MergeWith=\"../TestResults/UnitTests.json\" /maxcpucount:1
 
     - name: Code Coverage Upload
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         #files: ./Tests/TestResults/coverage.info,./Tests/TestResults/coverage.json,./Tests/TestResults/Domain.opencover.xml
-        file: ./Tests/TestResults/UnitTests.opencover.xml
+        #file: ./Tests/TestResults/UnitTests.opencover.xml
+        file: ./Tests/TestResults/UnitTests.json
         flags: UnitTests
         fail_ci_if_error: true
