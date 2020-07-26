@@ -25,6 +25,7 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         public void For_WhenGivenValidString_ReturnsCorrectModName(String releaseFileNameString, String modName)
         {
             var releaseFileName = ReleaseFileName.For(releaseFileNameString);
+            // TODO: For some reason this test is still inconsistent, probably due to whitespace trimming?
             Assert.Equal(modName.Trim(), releaseFileName.ModName);
         }
 

@@ -5,10 +5,6 @@
     <UserSecretsId>dotnet-ModUpdateScheduler-64A25E84-C059-4483-9D4D-002D0509C61A</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-  
   <ItemGroup>
     <PackageReference Include="MediatR" Version="8.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
