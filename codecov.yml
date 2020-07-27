@@ -10,6 +10,34 @@ coverage:
             default:
                 target: auto
                 threshold: 0%
+            Domain:
+                paths:
+                    - Tests/Domain.UnitTests
+                    - Src/Domain
+                target: auto
+                threshold: 0%
+            Application:
+                paths:
+                    - Tests/Application.UnitTests
+                    - Src/Application
+                target: auto
+                threshold: 0%
+            Infrastructure:
+                paths:
+                    - Tests/Infrastructure.UnitTests
+                    - Src/Infrastructure
+                target: auto
+                threshold: 0%
+            ModUpdateScheduler:
+                paths:
+                    - Tests/ModUpdateScheduler.UnitTests
+                    - Src/ModUpdateScheduler
+                target: auto
+                threshold: 0%
+        patch:
+            default:
+                target: auto
+                threshold: 0%
 
 parsers:
     gcov:
