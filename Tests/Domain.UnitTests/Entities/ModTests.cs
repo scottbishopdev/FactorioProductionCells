@@ -99,6 +99,7 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
             Assert.Equal("Releases is required. (Parameter 'Releases')", exception.Message);
         }
 
+        /*
         [Fact]
         public void ModConstructor_WhenReleasesIsEmpty_ThrowsArgumentException()
         {
@@ -108,6 +109,7 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
                 Releases: new List<Release>()));
             Assert.Equal("Releases must contain at least one entry. (Parameter 'Releases')", exception.Message);
         }
+        */
         #endregion
 
         #region TryAddRelease
