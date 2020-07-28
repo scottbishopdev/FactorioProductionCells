@@ -109,7 +109,7 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
             Assert.Equal("Releases must contain at least one entry. (Parameter 'Releases')", exception.Message);
         }
         #endregion
-
+/*
         #region TryAddRelease
         [Fact]
         public void TryAddRelease_WhenGivenValidRelease_AddsReleaseToList()
@@ -258,7 +258,7 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
             Assert.Equal("A mod must always have at least one title. You may not remove the last title from a mod's list of titles.", exception.Message);
         }
         #endregion
-
+*/
         private static String GetRandomCharacterString(Int32 length)
         {
             var stringBuilder = new StringBuilder();
