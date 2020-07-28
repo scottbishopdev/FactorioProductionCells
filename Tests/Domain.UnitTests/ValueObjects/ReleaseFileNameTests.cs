@@ -25,6 +25,7 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         public void For_WhenGivenValidString_ReturnsCorrectModName(String releaseFileNameString, String modName)
         {
             var releaseFileName = ReleaseFileName.For(releaseFileNameString);
+            // TODO: For some reason this test is still inconsistent, probably due to whitespace trimming?
             Assert.Equal(modName.Trim(), releaseFileName.ModName);
         }
 
@@ -192,10 +193,10 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
             new List<object[]>
             {
                 new object[] {
-                    new String(GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters, Mod.NameLength + 1) + "_1.4.16.zip")
+                    new String(GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters.Replace(" ", ""), Mod.NameLength + 1) + "_1.4.16.zip")
                 },
                 new object[] {
-                    new String(GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters, Mod.NameLength + 100) + "_1.4.16.zip")
+                    new String(GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters.Replace(" ", ""), Mod.NameLength + 100) + "_1.4.16.zip")
                 }
             };
 
