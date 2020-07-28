@@ -1,4 +1,4 @@
-name: Tests
+name: Tests and Code Coverage
 
 on:
     push:
@@ -36,8 +36,10 @@ jobs:
             - name: ModUpdateScheduler Unit Tests
               run: dotnet test --no-restore ./Tests/ModUpdateScheduler.UnitTests/ModUpdateScheduler.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=\"../TestResults/ModUpdateScheduler.UnitTests.xml\"  /p:Include=\"[ModUpdateScheduler*]*\" /maxcpucount:1
 
-            - name: Upload
-            - uses: actions/upload-artifact@master
+            - name: Upload Coverage Reports to Codecov
+              uses: codecov/codecov-action@v1
               with:
-                name: code-coverage-reports
-                path: ./Tests/TestResults/
+                token: ${{ secrets.CODECOV_TOKEN }}
+                files: ./Tests/TestResults/Domain.UnitTests.xml,./Tests/TestResults/Application.UnitTests.xml,./Tests/TestResults/Infrastructure.UnitTests.xml,./Tests/TestResults/ModUpdateScheduler.UnitTests.xml
+                flags: UnitTests
+                fail_ci_if_error: true

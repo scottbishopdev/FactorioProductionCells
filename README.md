@@ -10,10 +10,7 @@
         <img alt="Actions Status" src="https://github.com/sbishop411/FactorioProductionCells/workflows/Build/badge.svg">
     </a>
     <a href="https://github.com/sbishop411/FactorioProductionCells/actions">
-        <img alt="Actions Status" src="https://github.com/sbishop411/FactorioProductionCells/workflows/Test/badge.svg">
-    </a>
-    <a href="https://github.com/sbishop411/FactorioProductionCells/actions">
-        <img alt="Actions Status" src="https://github.com/sbishop411/FactorioProductionCells/workflows/Code Coverage/badge.svg">
+        <img alt="Actions Status" src="https://github.com/sbishop411/FactorioProductionCells/workflows/Tests%20and%20Code%20Coverage/badge.svg">
     </a>
 </p>
 
