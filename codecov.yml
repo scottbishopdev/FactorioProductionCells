@@ -1,0 +1,53 @@
+codecov:
+    require_ci_to_pass: yes
+
+coverage:
+    precision: 2
+    round: down
+    range: "50..90"
+    status:
+        project:
+            default:
+                target: auto
+                threshold: 0%
+            Domain:
+                paths:
+                    - Tests/Domain.UnitTests
+                    - Src/Domain
+                target: auto
+                threshold: 0%
+            Application:
+                paths:
+                    - Tests/Application.UnitTests
+                    - Src/Application
+                target: auto
+                threshold: 0%
+            Infrastructure:
+                paths:
+                    - Tests/Infrastructure.UnitTests
+                    - Src/Infrastructure
+                target: auto
+                threshold: 0%
+            ModUpdateScheduler:
+                paths:
+                    - Tests/ModUpdateScheduler.UnitTests
+                    - Src/ModUpdateScheduler
+                target: auto
+                threshold: 0%
+        patch:
+            default:
+                target: auto
+                threshold: 0%
+
+parsers:
+    gcov:
+        branch_detection:
+            conditional: yes
+            loop: yes
+            method: no
+            macro: no
+
+comment:
+    layout: "reach,diff,flags,tree"
+    behavior: default
+    require_changes: no
