@@ -199,7 +199,7 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
             Assert.Equal("A mod must always have at least one release. You may not remove the last release from a mod's list of releases.", exception.Message);
         }
         #endregion
-        
+
         #region GetLatestRelease
         [Fact]
         public void GetLatestRelease_WhenInvoked_ReturnsMostRecentRelease()

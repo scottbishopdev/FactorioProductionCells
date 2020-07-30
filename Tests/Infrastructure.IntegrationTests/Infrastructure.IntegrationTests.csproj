@@ -9,9 +9,8 @@
 
   <PropertyGroup>
     <CollectCoverage>true</CollectCoverage>
-    <CoverletOutputFormat>json,lcov</CoverletOutputFormat>
-    <CoverletOutput>../TestResults/</CoverletOutput>
-    <MergeWith>../TestResults/coverage.json</MergeWith>
+    <CoverletOutputFormat>lcov</CoverletOutputFormat>
+    <CoverletOutput>../TestResults/Infrastructure.IntegrationTests.xml</CoverletOutput>
     <IncludeTestAssembly>false</IncludeTestAssembly>
     <Include>[FactorioProductionCells.Infrastructure*]*</Include>
     <ExcludeByFile>**/Migrations/*.cs</ExcludeByFile>
