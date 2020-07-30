@@ -8,12 +8,12 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
 {
     public class LanguageTests
     {
-        internal static Guid EnglishId = new Guid("0e557edc-ae73-4799-8731-80761d775c8c");
-        internal static Guid GermanId = new Guid("6f7bd7a7-eecb-4a30-9731-59182d25bcf2");
-        internal static Language English = new Language("English", "en", true);
-        internal static Language EnglishWithId = new Language("English", "en", EnglishId, true);
-        internal static Language GermanWithId = new Language("German", "de", GermanId, false);
-        internal static Language EnglishUnitedStatesTest = new Language("English", "en-us");
+        public static Guid EnglishId = new Guid("0e557edc-ae73-4799-8731-80761d775c8c");
+        public static Guid GermanId = new Guid("6f7bd7a7-eecb-4a30-9731-59182d25bcf2");
+        public static Language English = new Language("English", "en", true);
+        public static Language EnglishWithId = new Language("English", "en", EnglishId, true);
+        public static Language GermanWithId = new Language("German", "de", GermanId, false);
+        public static Language EnglishUnitedStatesTest = new Language("English", "en-us");
         private static Random Random = new Random();
 
         #region LanguageConstructor

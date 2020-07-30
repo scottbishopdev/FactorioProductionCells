@@ -22,3 +22,4 @@ ToDo  List
   * Make sure Database starts with default language
   * Ensure messages can be added to RabbitMQ
 * Figure out why "FactorioProductionCells" isn't a required prefix when referencing ModUpdateScheduler in the context of Coverlet.
+* See if there's a reasonable way to extract all test data from the individual test projects and store it in a shared, centralized place.
