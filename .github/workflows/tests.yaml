@@ -28,7 +28,7 @@ jobs:
               run: dotnet test --no-restore /maxcpucount:1
 
             - name: Print Output Coverage Reports (Remove Me)
-              run: ls -l ../TestResults/
+              run: ls -l ./Tests/TestResults/
 
             - name: Upload Unit Test Coverage Reports to Codecov
               uses: codecov/codecov-action@v1
