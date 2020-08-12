@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FactorioProductionCells.Infrastructure.Identity;
@@ -76,20 +77,16 @@ namespace FactorioProductionCells.Infrastructure.Persistence
             }
         }
 
-        public static async Task<Language> SeedDefaultLanguageAsync(IFactorioProductionCellsDbContext dbContext)
+        public static async Task SeedDefaultLanguageAsync(IFactorioProductionCellsDbContext dbContext)
         {
             if (!dbContext.Languages.Any())
             {
                 var defaultLanguage = new Language("English", "en-us", true);
-
                 dbContext.Languages.Add(defaultLanguage);
-
                 await dbContext.SaveChangesAsync();
-
-                return defaultLanguage;
             }
 
-            return (Language)null;
+            return;
         }
     }
 }

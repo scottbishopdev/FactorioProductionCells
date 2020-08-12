@@ -41,7 +41,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     EnglishName = table.Column<string>(maxLength: 100, nullable: false),
-                    LanguageTag = table.Column<string>(maxLength: 20, nullable: false),
+                    LanguageTag = table.Column<string>(maxLength: 50, nullable: false),
                     IsDefault = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -270,7 +270,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     LastModified = table.Column<DateTime>(nullable: true),
                     DependencyTypeId = table.Column<int>(nullable: false),
                     DependentModName = table.Column<string>(maxLength: 200, nullable: false),
-                    DependencyComparisonTypeId = table.Column<int>(nullable: false),
+                    DependencyComparisonTypeId = table.Column<int>(nullable: true),
                     DependentModVersion_Major = table.Column<int>(nullable: true),
                     DependentModVersion_Minor = table.Column<int>(nullable: true),
                     DependentModVersion_Patch = table.Column<int>(nullable: true)
@@ -289,7 +289,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         column: x => x.DependencyComparisonTypeId,
                         principalTable: "DependencyComparisonType",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Dependency_DependencyType_DependencyTypeId",
                         column: x => x.DependencyTypeId,
@@ -325,7 +325,8 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     { 1, "LessThanOrEqualTo" },
                     { 2, "EqualTo" },
                     { 3, "GreaterThan" },
-                    { 4, "GreaterThanOrEqualTo" }
+                    { 4, "GreaterThanOrEqualTo" },
+                    { 5, "NotEqualTo" }
                 });
 
             migrationBuilder.InsertData(

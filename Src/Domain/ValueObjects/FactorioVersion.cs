@@ -2,21 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FactorioProductionCells.Domain.Common;
+using FactorioProductionCells.Domain.Validators;
 
 namespace FactorioProductionCells.Domain.ValueObjects
 {
-    public class FactorioVersion : ValueObject, IComparable
+    public class FactorioVersion : ValueObject, IComparable, IEquatable<FactorioVersion>
     {
         public const String FactorioVersionStringCapturePattern = @"^(-?\d+)\.(-?\d+)$";
 
         private FactorioVersion() {}
 
+        public FactorioVersion(FactorioVersion original)
+        {
+            ObjectValidator.ValidateRequiredObject(original, nameof(original));
+
+            this.Major = original.Major;
+            this.Minor = original.Minor;
+        }
+
         public static FactorioVersion For(String factorioVersionString)
         {
-            if (factorioVersionString == null) throw new ArgumentNullException("factorioVersionString", "A value for the Factorio version must be provided.");
+            StringValidator.ValidateRequiredString(factorioVersionString, nameof(factorioVersionString));
 
             Regex factorioVersionStringCaptureRegex = new Regex(FactorioVersion.FactorioVersionStringCapturePattern);
-            Match match = factorioVersionStringCaptureRegex.Match(factorioVersionString.Trim());            
+            Match match = factorioVersionStringCaptureRegex.Match(factorioVersionString);            
             if (!match.Success) throw new ArgumentException($"Unable to parse \"{factorioVersionString}\" to a valid FactorioVersion due to formatting.", "factorioVersionString");
 
             Int32 majorValue = Convert.ToInt32(match.Groups[1].Value);
@@ -44,7 +53,12 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return For(versionString);
         }
 
-        public override bool Equals(Object obj)
+        public Boolean Equals(FactorioVersion right)
+        {
+            return base.Equals(right);
+        }
+
+        public override Boolean Equals(Object obj)
         {
             if(obj.GetType() != this.GetType()) throw new ArgumentException("Unable to compare the specified object to a FactorioVersion.", "obj");
             
@@ -56,45 +70,45 @@ namespace FactorioProductionCells.Domain.ValueObjects
             return base.GetHashCode();
         }
         
-        public static bool operator ==(FactorioVersion left, FactorioVersion right)
+        public static Boolean operator ==(FactorioVersion left, FactorioVersion right)
         {
             return ValueObject.EqualOperator(left, right);
         }
 
-        public static bool operator !=(FactorioVersion left, FactorioVersion right)
+        public static Boolean operator !=(FactorioVersion left, FactorioVersion right)
         {
             return ValueObject.NotEqualOperator(left, right);
         }
 
-        public static bool operator >(FactorioVersion left, FactorioVersion right)
+        public static Boolean operator >(FactorioVersion left, FactorioVersion right)
         {
             return left.Major > right.Major
                 || (left.Major == right.Major && left.Minor > right.Minor);
         }
 
-        public static bool operator >=(FactorioVersion left, FactorioVersion right)
+        public static Boolean operator >=(FactorioVersion left, FactorioVersion right)
         {
             return left.Equals(right)
                 || left.Major > right.Major
                 || (left.Major == right.Major && left.Minor > right.Minor);
         }
 
-        public static bool operator <(FactorioVersion left, FactorioVersion right)
+        public static Boolean operator <(FactorioVersion left, FactorioVersion right)
         {
             return left.Major < right.Major
                 || (left.Major == right.Major && left.Minor < right.Minor);
         }
 
-        public static bool operator <=(FactorioVersion left, FactorioVersion right)
+        public static Boolean operator <=(FactorioVersion left, FactorioVersion right)
         {
             return left.Equals(right)
                 || left.Major < right.Major
                 || (left.Major == right.Major && left.Minor < right.Minor);
         }
 
-        public int CompareTo(Object obj)
+        public Int32 CompareTo(Object obj)
         {
-            if(obj.GetType() != this.GetType()) throw new ArgumentException("The specified object to compare is not a ModVersion.", "obj");
+            if(obj.GetType() != this.GetType()) throw new ArgumentException("The specified object to compare is not a FactorioVersion.", "obj");
 
             FactorioVersion right = (FactorioVersion)obj;
             
@@ -103,7 +117,7 @@ namespace FactorioProductionCells.Domain.ValueObjects
             else return 0;
         }
 
-        public override string ToString()
+        public override String ToString()
         {
             return $"{Major}.{Minor}";
         }

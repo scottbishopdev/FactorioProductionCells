@@ -1,13 +1,22 @@
 using System;
 using FactorioProductionCells.Domain.Enums;
+using FactorioProductionCells.Domain.Validators;
 
 namespace FactorioProductionCells.Domain.Entities
 {
-    public class DependencyType
+    public class DependencyType : IEquatable<DependencyType>
     {
         public const Int32 NameLength = 20;
         
         private DependencyType() {}
+
+        public DependencyType(DependencyType original)
+        {
+            ObjectValidator.ValidateRequiredObject(original, nameof(original));
+            
+            this.Id = original.Id;
+            this.Name = original.Name;
+        }
 
         public DependencyType(DependencyTypeId enumId)
         {
@@ -15,7 +24,7 @@ namespace FactorioProductionCells.Domain.Entities
             this.Name = Enum.GetName(typeof(DependencyTypeId), enumId);
         }
 
-        public DependencyType(int intId)
+        public DependencyType(Int32 intId)
         {
             if(!Enum.IsDefined(typeof(DependencyTypeId), intId)) throw new ArgumentOutOfRangeException("intId", $"Unable to parse the supplied id {intId} into a DependencyType.");
 
@@ -25,7 +34,8 @@ namespace FactorioProductionCells.Domain.Entities
 
         public static DependencyType For(String dependencyTypeString)
         {
-            dependencyTypeString = dependencyTypeString?.Trim();
+            ObjectValidator.ValidateRequiredObject(dependencyTypeString, nameof(dependencyTypeString));
+            if (String.IsNullOrWhiteSpace(dependencyTypeString) && dependencyTypeString != "") throw new ArgumentException($"dependencyTypeString may not be whitespace.", "dependencyTypeString");
 
             switch (dependencyTypeString)
             {
@@ -60,6 +70,13 @@ namespace FactorioProductionCells.Domain.Entities
                 default:
                     return "";
             }
+        }
+
+        public Boolean Equals(DependencyType right)
+        {
+            return right != null
+                && this.Id == right.Id
+                && ((this.Name == null && right.Name == null) || this.Name == right.Name);
         }
     }
 }

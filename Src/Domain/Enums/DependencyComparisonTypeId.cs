@@ -6,6 +6,7 @@ namespace FactorioProductionCells.Domain.Enums
         LessThanOrEqualTo = 1,
         EqualTo = 2,
         GreaterThan = 3,
-        GreaterThanOrEqualTo = 4
+        GreaterThanOrEqualTo = 4,
+        NotEqualTo = 5
     }
 }

@@ -90,7 +90,9 @@ namespace FactorioProductionCells.ModUpdateScheduler
                 {
                     logger.LogInformation($"Attempting to seed the database context {typeof(FactorioProductionCellsDbContext).FullName} with default language data...");
                     var dbContext = scope.ServiceProvider.GetRequiredService<IFactorioProductionCellsDbContext>();
-                    var defaultLanguage = await FactorioProductionCellsDbContextSeed.SeedDefaultLanguageAsync(dbContext);
+                    await FactorioProductionCellsDbContextSeed.SeedDefaultLanguageAsync(dbContext);
+
+                    var defaultLanguage = dbContext.Languages.Single(l => l.IsDefault == true);
 
                     logger.LogInformation($"Attempting to seed the database context {typeof(FactorioProductionCellsDbContext).FullName} with default user data...");
                     var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();

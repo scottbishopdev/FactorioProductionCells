@@ -27,21 +27,10 @@ jobs:
             - name: Unit Tests
               run: dotnet test --no-restore /maxcpucount:1
 
-            - name: Print Output Coverage Reports (Remove Me)
-              run: ls -l ./Tests/TestResults/
-
             - name: Upload Unit Test Coverage Reports to Codecov
               uses: codecov/codecov-action@v1
               with:
                 token: ${{ secrets.CODECOV_TOKEN }}
                 files: ./Tests/TestResults/Domain.UnitTests.xml,./Tests/TestResults/Application.UnitTests.xml,./Tests/TestResults/Infrastructure.UnitTests.xml,./Tests/TestResults/ModUpdateScheduler.UnitTests.xml
                 flags: UnitTests
-                fail_ci_if_error: true
-
-            - name: Upload Integration Test Coverage Reports to Codecov
-              uses: codecov/codecov-action@v1
-              with:
-                token: ${{ secrets.CODECOV_TOKEN }}
-                files: ./Tests/TestResults/Infrastructure.IntegrationTests.xml
-                flags: IntegrationTests
                 fail_ci_if_error: true

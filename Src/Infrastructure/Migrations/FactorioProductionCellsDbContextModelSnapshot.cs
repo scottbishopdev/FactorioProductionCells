@@ -22,7 +22,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
             modelBuilder.Entity("FactorioProductionCells.Domain.Entities.Dependency", b =>
                 {
-                    b.Property<Guid>("ReleaseId")
+                    b.Property<Guid?>("ReleaseId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("DependentModId")
@@ -34,7 +34,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                     b.Property<DateTime>("AddedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("DependencyComparisonTypeId")
+                    b.Property<int?>("DependencyComparisonTypeId")
                         .HasColumnType("integer");
 
                     b.Property<int>("DependencyTypeId")
@@ -105,6 +105,11 @@ namespace FactorioProductionCells.Infrastructure.Migrations
                         {
                             Id = 4,
                             Name = "GreaterThanOrEqualTo"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "NotEqualTo"
                         });
                 });
 
@@ -162,8 +167,8 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.Property<string>("LanguageTag")
                         .IsRequired()
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
@@ -430,9 +435,7 @@ namespace FactorioProductionCells.Infrastructure.Migrations
 
                     b.HasOne("FactorioProductionCells.Domain.Entities.DependencyComparisonType", "DependencyComparisonType")
                         .WithMany()
-                        .HasForeignKey("DependencyComparisonTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DependencyComparisonTypeId");
 
                     b.HasOne("FactorioProductionCells.Domain.Entities.DependencyType", "DependencyType")
                         .WithMany()

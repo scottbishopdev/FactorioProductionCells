@@ -1,111 +1,155 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 using FactorioProductionCells.Domain.Entities;
-using FactorioProductionCells.Domain.Enums;
 using FactorioProductionCells.Domain.ValueObjects;
+using FactorioProductionCells.TestData.Common;
+using FactorioProductionCells.TestData.Domain.Entities;
 
 namespace FactorioProductionCells.Domain.UnitTests.Entities
 {
     public class DependencyTests
     {
-        internal static String TestModBaseDependencyString = "base >= 0.14.0";
-        internal static String TestModAngelsConfigDependencyString = "? angelsConfig >= 0.1.2";
-        internal static Dependency TestModAngelsConfigFromConstructor = new Dependency(
-            DependencyType: new DependencyType(DependencyTypeId.Optional),
-            DependentModName: "angelsConfig",
-            DependencyComparisonType: new DependencyComparisonType(DependencyComparisonTypeId.GreaterThanOrEqualTo),
-            DependentModVersion: ModVersion.For("0.1.2"));
-
-        internal static Dependency TestModBaseDependencyFromFor = Dependency.For(TestModBaseDependencyString);
-        internal static Dependency TestModAngelsConfigDependencyFromFor = Dependency.For(TestModAngelsConfigDependencyString);
-        private static Random Random = new Random();
-
-        #region DependencyConstructor
-        [Fact]
-        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependencyType()
+        #region Copy Constructor
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesWithDependencyType), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesWithDependencyType), MemberType=typeof(DependencyTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectDependencyType(Dependency dependency, DependencyType expectedDependencyType)
         {
-            // TODO: See if there's a way to perform this assertion without relying on the class's .ToString() method.
-            Assert.Equal(new DependencyType(DependencyTypeId.Optional).ToString(), TestModAngelsConfigFromConstructor.DependencyType.ToString());
+            var testDependency = new Dependency(dependency);
+            Assert.Equal(expectedDependencyType, testDependency.DependencyType);
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesWithDependentModName), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesWithDependentModName), MemberType=typeof(DependencyTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectDependentModName(Dependency dependency, String expectedDependentModName)
+        {
+            var testDependency = new Dependency(dependency);
+            Assert.Equal(expectedDependentModName, testDependency.DependentModName);
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesWithDependencyComparisonType), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesWithDependencyComparisonType), MemberType=typeof(DependencyTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectDependencyComparisonType(Dependency dependency, DependencyComparisonType expectedDependencyComparisonType)
+        {
+            var testDependency = new Dependency(dependency);
+            Assert.Equal(expectedDependencyComparisonType, testDependency.DependencyComparisonType);
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesWithDependentModVersion), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesWithDependentModVersion), MemberType=typeof(DependencyTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectDependentModVersion(Dependency dependency, ModVersion expectedDependentModVersion)
+        {
+            var testDependency = new Dependency(dependency);
+            Assert.Equal(expectedDependentModVersion, testDependency.DependentModVersion);
         }
 
         [Fact]
-        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependentModName()
+        public void CopyConstructor_WhenGivenNull_ThrowsArgumentNullException()
         {
-            Assert.Equal("angelsConfig", TestModAngelsConfigFromConstructor.DependentModName);
+            var exception = Assert.Throws<ArgumentNullException>(() => new Dependency(null));
+            Assert.Equal("original is required. (Parameter 'original')", exception.Message);
+        }
+        #endregion
+        
+        #region Individual Value Constructor
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependencyType(DependencyType dependencyType, String dependentModName, DependencyComparisonType dependencyComparisonType, ModVersion dependentModVersion)
+        {
+            var testDependency = new Dependency(dependencyType, dependentModName, dependencyComparisonType, dependentModVersion);
+            Assert.Equal(dependencyType, testDependency.DependencyType);
         }
 
-        [Fact]
-        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependencyComparisonType()
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependentModName(DependencyType dependencyType, String dependentModName, DependencyComparisonType dependencyComparisonType, ModVersion dependentModVersion)
         {
-            // TODO: See if there's a way to perform this assertion without relying on the class's .ToString() method.
-            Assert.Equal(new DependencyComparisonType(DependencyComparisonTypeId.GreaterThanOrEqualTo).ToString(), TestModAngelsConfigFromConstructor.DependencyComparisonType.ToString());
+            var testDependency = new Dependency(dependencyType, dependentModName, dependencyComparisonType, dependentModVersion);
+            Assert.Equal(dependentModName, testDependency.DependentModName);
         }
 
-        [Fact]
-        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependentModVersion()
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependencyComparisonType(DependencyType dependencyType, String dependentModName, DependencyComparisonType dependencyComparisonType, ModVersion dependentModVersion)
         {
-            Assert.Equal(ModVersion.For("0.1.2"), TestModAngelsConfigFromConstructor.DependentModVersion);
+            var testDependency = new Dependency(dependencyType, dependentModName, dependencyComparisonType, dependentModVersion);
+            Assert.Equal(dependencyComparisonType, testDependency.DependencyComparisonType);
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesCreationProperties), MemberType=typeof(DependencyTestData))]
+        public void DependencyConstructor_WhenValidParameters_ReturnsCorrectDependentModVersion(DependencyType dependencyType, String dependentModName, DependencyComparisonType dependencyComparisonType, ModVersion dependentModVersion)
+        {
+            var testDependency = new Dependency(dependencyType, dependentModName, dependencyComparisonType, dependentModVersion);
+            Assert.Equal(dependentModVersion, testDependency.DependentModVersion);
         }
         #endregion
 
         #region For
         [Theory]
-        [InlineData("? angelsConfig >= 0.1.2", "?")]
-        [InlineData(" ? angelsConfig >= 0.1.2   ", "?")]
-        [InlineData("(?) angelsConfig >= 0.1.2", "(?)")]
-        [InlineData("! angelsConfig >= 0.1.2", "!")]
-        [InlineData("angelsConfig >= 0.1.2", "")]
-        [InlineData("   angelsConfig >= 0.1.2 ", "")]
-        public void For_WhenGivenValidString_ReturnsCorrectDependencyType(String dependencyString, String dependencyTypeString)
+        [MemberData(nameof(DependencyTestData.ValidStaticStringsWithDependencyType), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomStringsWithDependencyType), MemberType=typeof(DependencyTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectDependencyType(String dependencyString, DependencyType expectedDependencyType)
         {
             var dependency = Dependency.For(dependencyString);
-            // TODO: See if there's a way to perform this assertion without relying on the class's .ToString() method.
-            Assert.Equal(dependencyTypeString, dependency.DependencyType.ToString());
+            Assert.Equal(expectedDependencyType, dependency.DependencyType);
         }
 
         [Theory]
-        [InlineData("base >= 0.14.0", "base")]
-        [InlineData(" base >= 0.14.0    ", "base")]
-        [InlineData("? angelsConfig >= 0.1.2", "angelsConfig")]
-        public void For_WhenGivenValidString_ReturnsCorrectDependentModName(String dependencyString, String dependentModName)
+        [MemberData(nameof(DependencyTestData.ValidStaticStringsWithDependentModName), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomStringsWithDependentModName), MemberType=typeof(DependencyTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectDependentModName(String dependencyString, String expectedDependentModName)
         {
             var dependency = Dependency.For(dependencyString);
-            Assert.Equal(dependentModName, dependency.DependentModName);
+            Assert.Equal(expectedDependentModName, dependency.DependentModName);
         }
 
         [Theory]
-        [InlineData("   angelsConfig >= 0.1.2 ", ">=")]
-        [InlineData("angelsConfig >= 0.1.2", ">=")]
-        [InlineData("angelsConfig > 0.1.2", ">")]
-        [InlineData("! angelsConfig > 0.1.2", ">")]
-        [InlineData("angelsConfig = 0.1.2", "=")]
-        [InlineData("angelsConfig < 0.1.2", "<")]
-        [InlineData("angelsConfig <= 0.1.2", "<=")]
-        public void For_WhenGivenValidString_ReturnsCorrectDependencyComparisonType(String dependencyString, String dependencyComparisonTypeString)
+        [MemberData(nameof(DependencyTestData.ValidStaticStringsWithDependencyComparisonType), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomStringsWithDependencyComparisonType), MemberType=typeof(DependencyTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectDependencyComparisonType(String dependencyString, DependencyComparisonType expectedDependencyComparisonType)
         {
             var dependency = Dependency.For(dependencyString);
-            // TODO: See if there's a way to perform this assertion without relying on the class's .ToString() method.
-            Assert.Equal(dependencyComparisonTypeString, dependency.DependencyComparisonType.ToString());
+            Assert.Equal(expectedDependencyComparisonType, dependency.DependencyComparisonType);
         }
 
         [Theory]
-        [InlineData("base >= 0.14.0", "0.14.0")]
-        [InlineData("angelsConfig >= 1.1.2", "1.1.2")]
-        public void For_WhenGivenValidString_ReturnsCorrectDependentModVersion(String dependencyString, String dependentModVersionString)
+        [MemberData(nameof(DependencyTestData.ValidStaticStringsWithDependentModVersion), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomStringsWithDependentModVersion), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidDependencyStringWithFactorioVersionFormattedModVersion), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.RandomDependencyStringsWithExpectedModVersion), parameters: 10, MemberType=typeof(DependencyTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectDependentModVersion(String dependencyString, ModVersion expectedModVersion)
         {
             var dependency = Dependency.For(dependencyString);
-            Assert.Equal(ModVersion.For(dependentModVersionString), dependency.DependentModVersion);
+            Assert.Equal(expectedModVersion, dependency.DependentModVersion);
+        }
+
+        [Fact]
+        public void For_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => Dependency.For(null));
+            Assert.Equal("dependencyString is required. (Parameter 'dependencyString')", exception.Message);
         }
 
         [Theory]
-        [InlineData("")]
-        [InlineData("   ")]
+        [MemberData(nameof(CommonTestData.EmptyAndWhitespaceStrings), MemberType=typeof(CommonTestData))]
+        public void For_WhenGivenEmptyStringOrWhitespace_ThrowsArgumentException(String dependencyString)
+        {
+            var exception = Assert.Throws<ArgumentException>(() => Dependency.For(dependencyString));
+            Assert.Equal("dependencyString may not be empty. (Parameter 'dependencyString')", exception.Message);
+        }
+
+        [Theory]
         [InlineData("?? base >= 0.14.0")]
         [InlineData("? ? base >= 0.14.0")]
         [InlineData(">= base ! 0.14.0")]
-        [InlineData("base >= 0.14")]
         [InlineData(" >= 0.14.0")]
         [InlineData(">= 0.14.0")]
         [InlineData("base  0.14.0")]
@@ -113,7 +157,6 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         [InlineData("base0.14.0")]
         [InlineData("base >= ")]
         [InlineData("base >=")]
-        [InlineData("base >= 0.140")]
         [InlineData("base >= 0.14.0.1.2.3.4.5")]
         [InlineData("? b!as%e >= 0.14.0")]
         [InlineData("? base XX 0.14.0")]
@@ -126,7 +169,7 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         }
 
         [Theory]
-        [MemberData(nameof(ReleaseFileNamesWithModNameTooLong))]
+        [MemberData(nameof(DependencyTestData.RandomDependenciesWithModNameTooLong), parameters: 6, MemberType=typeof(DependencyTestData))]
         public void For_WhenGivenModNameTooLong_ThrowsArgumentException(String dependencyString)
         {
             var exception = Assert.Throws<ArgumentException>(() => Dependency.For(dependencyString));
@@ -135,33 +178,36 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         #endregion
 
         #region ToString
-        [Fact]
-        public void ToString_WhenGivenDependencyWithoutType_ReturnsCorrectString()
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticDependenciesFromForWithStrings), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomDependenciesFromForWithStrings), MemberType=typeof(DependencyTestData))]
+        public void ToString_WhenGivenReleaseFileName_ReturnsCorrectString(Dependency dependency, String expected)
         {
-            Assert.Equal(TestModBaseDependencyString, TestModBaseDependencyFromFor.ToString());
-        }
-
-        [Fact]
-        public void ToString_WhenGivenDependencyWithType_ReturnsCorrectString()
-        {
-            Assert.Equal(TestModAngelsConfigDependencyString, TestModAngelsConfigDependencyFromFor.ToString());
+            Assert.Equal(expected, dependency.ToString());
         }
         #endregion
 
-        public static IEnumerable<object[]> ReleaseFileNamesWithModNameTooLong =>
-            new List<object[]>
-            {
-                new object[] {
-                    new String("? " + GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters, Mod.NameLength + 1) + " >= 0.1.2")
-                },
-                new object[] {
-                    new String("? " + GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters, Mod.NameLength + 100) + " >= 0.1.2")
-                }
-            };
-
-        private static String GetRandomCharacterString(String characterSet, Int32 length)
+        #region Equals
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticEqualDependencyPairs), MemberType=typeof(DependencyTestData))]
+        [MemberData(nameof(DependencyTestData.ValidRandomEqualDependencyPairs), MemberType=typeof(DependencyTestData))]
+        public void Equals_WhenProvidedEqualDependencies_ReturnsTrue(Dependency left, Dependency right)
         {
-            return new String(Enumerable.Repeat(characterSet, length).Select(s => s[Random.Next(s.Length)]).ToArray());
+            Assert.True(left.Equals(right));
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyTestData.ValidStaticNonEqualDependencyPairs), MemberType=typeof(DependencyTestData))]
+        public void Equals_WhenProvidedNotEqualDependencies_ReturnsFalse(Dependency left, Dependency right)
+        {
+            Assert.False(left.Equals(right));
+        }
+
+        [Fact]
+        public void Equals_WhenGivenNull_ReturnsFalse()
+        {
+            Assert.False(DependencyTestData.BaseModRequiredGreaterThanEqualZeroThirteenZero.Equals(null));
+        }
+        #endregion
     }
 }

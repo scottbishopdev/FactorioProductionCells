@@ -1,24 +1,46 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Domain.ValueObjects;
+using FactorioProductionCells.TestData.Domain.ValueObjects;
+using FactorioProductionCells.TestData.Common;
 
 namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
 {
     public class ReleaseDownloadUrlTests
     {
-        internal static ReleaseDownloadUrl TestModDownloadUrl = ReleaseDownloadUrl.For("/download/Test%20Mod/1234567890abcd1234567890");
-        internal static ReleaseDownloadUrl TestModCloneDownloadUrl = ReleaseDownloadUrl.For("/download/Test%20Mod/1234567890abcd1234567890");
-        internal static ReleaseDownloadUrl NotATestModDownloadUrl = ReleaseDownloadUrl.For("/download/NotATestMod/1234567890abcd1234567890");
-        private static Random Random = new Random();
+        #region Copy Constructor
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticReleaseDownloadUrlsWithModName), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomReleaseDownloadUrlsWithModName), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectModName(ReleaseDownloadUrl releaseDownloadUrl, String expectedModName)
+        {
+            var testReleaseDownloadUrl = new ReleaseDownloadUrl(releaseDownloadUrl);
+            Assert.Equal(expectedModName, testReleaseDownloadUrl.ModName);
+        }
+
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticReleaseDownloadUrlsWithReleaseToken), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomReleaseDownloadUrlsWithReleaseToken), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectReleaseToken(ReleaseDownloadUrl releaseDownloadUrl, String expectedReleaseToken)
+        {
+            var testReleaseDownloadUrl = new ReleaseDownloadUrl(releaseDownloadUrl);
+            Assert.Equal(expectedReleaseToken, testReleaseDownloadUrl.ReleaseToken);
+        }
+
+        [Fact]
+        public void CopyConstructor_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new ReleaseDownloadUrl(original: null));
+            Assert.Equal("original is required. (Parameter 'original')", exception.Message);
+        }
+        #endregion
         
         #region For
         [Theory]
-        [InlineData("/download/TestMod/1234567890abcd1234567890", "TestMod")]
-        [InlineData("   /download/TestMod/1234567890abcd1234567890 ", "TestMod")]
-        [MemberData(nameof(ValidDownloadUrlsWithRandomModName))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticStringsWithModName), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomStringsWithModName), MemberType=typeof(ReleaseDownloadUrlTestData))]
         public void For_WhenGivenValidString_ReturnsCorrectModName(String releaseDownloadUrlString, String modName)
         {
             var releaseDownloadUrl = ReleaseDownloadUrl.For(releaseDownloadUrlString);
@@ -26,13 +48,27 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         }
 
         [Theory]
-        [InlineData("/download/TestMod/1234567890abcd1234567890", "1234567890abcd1234567890")]
-        [InlineData("   /download/TestMod/1234567890abcd1234567890 ", "1234567890abcd1234567890")]
-        [MemberData(nameof(ValidDownloadUrlsWithRandomReleaseToken))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticStringsWithReleaseToken), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomStringsWithReleaseToken), MemberType=typeof(ReleaseDownloadUrlTestData))]
         public void For_WhenGivenValidString_ReturnsCorrectReleaseToken(String releaseDownloadUrlString, String releaseToken)
         {
             var releaseDownloadUrl = ReleaseDownloadUrl.For(releaseDownloadUrlString);
             Assert.Equal(releaseToken, releaseDownloadUrl.ReleaseToken);
+        }
+
+        [Fact]
+        public void For_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => ReleaseDownloadUrl.For(null));
+            Assert.Equal("releaseDownloadUrlString is required. (Parameter 'releaseDownloadUrlString')", exception.Message);
+        }
+
+        [Theory]
+        [MemberData(nameof(CommonTestData.EmptyAndWhitespaceStrings), MemberType=typeof(CommonTestData))]
+        public void For_WhenGivenEmptyStringOrWhitespace_ThrowsArgumentException(String releaseDownloadUrlString)
+        {
+            var exception = Assert.Throws<ArgumentException>(() => ReleaseDownloadUrl.For(releaseDownloadUrlString));
+            Assert.Equal($"releaseDownloadUrlString may not be empty. (Parameter 'releaseDownloadUrlString')", exception.Message);
         }
 
         [Theory]
@@ -47,7 +83,6 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         [InlineData("/TestMod/1234567890abcd1234567890")]
         [InlineData("/download/1234567890abcd1234567890")]
         [InlineData("/download/TestMod")]
-        [InlineData("")]
         [InlineData("What're you going to do, bleed on me?   I'm *INVINCIBLE*!!!")]
         public void For_WhenGivenInvalidFormat_ThrowsArgumentException(String releaseDownloadUrlString)
         {
@@ -55,15 +90,8 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
             Assert.Equal($"Unable to parse \"{releaseDownloadUrlString}\" to a valid ReleaseDownloadUrl due to formatting. (Parameter 'releaseDownloadUrlString')", exception.Message);
         }
 
-        [Fact]
-        public void For_WhenGivenNull_ThrowsArgumentNullException()
-        {
-            var exception = Assert.Throws<ArgumentNullException>(() => ReleaseDownloadUrl.For(null));
-            Assert.Equal("A value for the release download URL must be provided. (Parameter 'releaseDownloadUrlString')", exception.Message);
-        }
-
         [Theory]
-        [MemberData(nameof(DownloadUrlsWithModNameTooLong))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.RandomReleaseDownloadUrlsWithModNameTooLong), parameters: 3, MemberType=typeof(ReleaseDownloadUrlTestData))]
         public void For_WhenGivenModNameTooLong_ThrowsArgumentException(String releaseDownloadUrlString)
         {
             var exception = Assert.Throws<ArgumentException>(() => ReleaseDownloadUrl.For(releaseDownloadUrlString));
@@ -71,7 +99,7 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         }
 
         [Theory]
-        [MemberData(nameof(DownloadUrlsWithReleaseTokenTooLong))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.RandomReleaseDownloadUrlsWithReleaseTokenTooLong), parameters: 3, MemberType=typeof(ReleaseDownloadUrlTestData))]
         public void For_WhenGivenReleaseTokenTooLong_ThrowsArgumentException(String releaseDownloadUrlString)
         {
             var exception = Assert.Throws<ArgumentException>(() => ReleaseDownloadUrl.For(releaseDownloadUrlString));
@@ -80,18 +108,21 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         #endregion
 
         #region ToStringOperator
-        [Fact]
-        public void ToStringOperator_WhenGivenReleaseDownloadUrl_ReturnsCorrectString()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticReleaseDownloadUrlsFromForWithStrings), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomReleaseDownloadUrlsFromForWithStrings), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void ToStringOperator_WhenGivenReleaseDownloadUrl_ReturnsCorrectString(ReleaseDownloadUrl releaseDownloadUrl, String expected)
         {
-            String testModString = TestModDownloadUrl;
-            Assert.Equal("/download/Test%20Mod/1234567890abcd1234567890", testModString);
+            String releaseDownloadUrlString = releaseDownloadUrl;
+            Assert.Equal(expected, releaseDownloadUrlString);
         }
         #endregion
 
         #region ToReleaseDownloadUrlOperator
         [Theory]
-        [MemberData(nameof(ToReleaseDownloadUrlOperatorData))]
-        public void ToReleaseDownloadUrlOperator_WhenGivenString_ReturnsCorrectReleaseDownloadUrl(String releaseDownloadUrlString, ReleaseDownloadUrl releaseDownloadUrl)
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticReleaseDownloadUrlsFromForWithStrings), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomReleaseDownloadUrlsFromForWithStrings), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void ToReleaseDownloadUrlOperator_WhenGivenString_ReturnsCorrectReleaseDownloadUrl(ReleaseDownloadUrl releaseDownloadUrl, String releaseDownloadUrlString)
         {
             ReleaseDownloadUrl newReleaseDownloadUrl = (ReleaseDownloadUrl)releaseDownloadUrlString;
             Assert.Equal(releaseDownloadUrl, newReleaseDownloadUrl);
@@ -99,144 +130,101 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         #endregion
 
         #region Equals
-        [Fact]
-        public void Equals_WhenProvidedEqualReleaseDownloadUrls_ReturnsTrue()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void Equals_WhenProvidedEqualReleaseDownloadUrls_ReturnsTrue(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.True(TestModDownloadUrl.Equals((Object)TestModCloneDownloadUrl));
+            Assert.True(left.Equals((Object)right));
         }
 
-        [Fact]
-        public void Equals_WhenProvidedNotEqualReleaseDownloadUrls_ReturnsFalse()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticNonEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void Equals_WhenProvidedNotEqualVersion_ReturnsFalse(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.False(TestModDownloadUrl.Equals((Object)NotATestModDownloadUrl));
+            Assert.False(left.Equals((Object)right));
         }
         
         [Theory]
-        [MemberData(nameof(Equals_InvalidTypesData))]
+        [MemberData(nameof(CommonTestData.VariousValueTypeData), MemberType=typeof(CommonTestData))]
         public void Equals_WhenProvidedDifferentType_ThrowsArgumentException(Object right)
         {
-            var exception = Assert.Throws<ArgumentException>(() => TestModDownloadUrl.Equals(right));
+            var exception = Assert.Throws<ArgumentException>(() => ReleaseDownloadUrlTestData.TestModDownloadUrl.Equals(right));
             Assert.Equal("Unable to compare the specified object to a ReleaseDownloadUrl. (Parameter 'obj')", exception.Message);
         }
         #endregion
 
         #region GetHashCode
-        [Fact]
-        public void GetHashCode_MatchingReleaseDownloadUrls_ReturnSameHashCode()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void GetHashCode_MatchingReleaseDownloadUrls_ReturnSameHashCode(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.Equal(TestModDownloadUrl.GetHashCode(), TestModCloneDownloadUrl.GetHashCode());
+            Assert.Equal(left.GetHashCode(), right.GetHashCode());
         }
 
-        [Fact]
-        public void GetHashCode_NonMatchingReleaseDownloadUrls_ReturnDifferentHashCode()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticNonEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void GetHashCode_NonMatchingReleaseDownloadUrls_ReturnDifferentHashCode(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.NotEqual(TestModDownloadUrl.GetHashCode(), NotATestModDownloadUrl.GetHashCode());
+            Assert.NotEqual(left.GetHashCode(), right.GetHashCode());
         }
         #endregion
 
         #region EqualsOperator
-        [Fact]
-        public void EqualsOperator_WhenGivenMatchingReleaseDownloadUrls_ReturnsTrue()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void EqualsOperator_WhenGivenMatchingReleaseDownloadUrls_ReturnsTrue(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.True(TestModDownloadUrl == TestModCloneDownloadUrl);
+            Assert.True(left == right);
         }
 
-        [Fact]
-        public void EqualsOperator_WhenGivenNotMatchingReleaseDownloadUrls_ReturnsFalse()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticNonEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void EqualsOperator_WhenGivenNotMatchingReleaseDownloadUrls_ReturnsFalse(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.False(TestModDownloadUrl == NotATestModDownloadUrl);
+            Assert.False(left == right);
         }
         #endregion
 
         #region NotEqualsOperator
-        [Fact]
-        public void NotEqualsOperator_WhenGivenNotMatchingReleaseDownloadUrls_ReturnsTrue()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticNonEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void NotEqualsOperator_WhenGivenNotMatchingReleaseDownloadUrls_ReturnsTrue(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.True(TestModDownloadUrl != NotATestModDownloadUrl);
+            Assert.True(left != right);
         }
         
-        [Fact]
-        public void NotEqualsOperator_WhenGivenMatchingReleaseDownloadUrls_ReturnsFalse()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomEqualReleaseDownloadUrlPairs), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void NotEqualsOperator_WhenGivenMatchingReleaseDownloadUrls_ReturnsFalse(ReleaseDownloadUrl left, ReleaseDownloadUrl right)
         {
-            Assert.False(TestModDownloadUrl != TestModCloneDownloadUrl);
+            Assert.False(left != right);
         }
         #endregion
 
         #region ToString
-        [Fact]
-        public void ToString_WhenGivenReleaseDownloadUrl_ReturnsCorrectString()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticReleaseDownloadUrlsFromForWithStrings), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomReleaseDownloadUrlsFromForWithStrings), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void ToString_WhenGivenReleaseDownloadUrl_ReturnsCorrectString(ReleaseDownloadUrl releaseDownloadUrl, String expected)
         {
-            Assert.Equal("/download/Test%20Mod/1234567890abcd1234567890", TestModDownloadUrl.ToString());
+            Assert.Equal(expected, releaseDownloadUrl.ToString());
         }
         #endregion
 
         #region GetAtomicValues
-        [Fact]
-        public void GetAtomicValues_WhenGivenReleaseDownloadUrl_ReturnsCorrectValues()
+        [Theory]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidStaticReleaseDownloadUrlsFromForWithModNameAndReleaseToken), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        [MemberData(nameof(ReleaseDownloadUrlTestData.ValidRandomReleaseDownloadUrlsFromForWithModNameAndReleaseToken), MemberType=typeof(ReleaseDownloadUrlTestData))]
+        public void GetAtomicValues_WhenGivenReleaseDownloadUrl_ReturnsCorrectValues(ReleaseDownloadUrl releaseDownloadUrl, String expectedModName, String expectedReleaseToken)
         {
-            var atomicValues = TestModDownloadUrl.GetAtomicValues();
-            Assert.Equal("Test%20Mod", atomicValues.ElementAt(0));
-            Assert.Equal("1234567890abcd1234567890", atomicValues.ElementAt(1));
+            var atomicValues = releaseDownloadUrl.GetAtomicValues();
+            Assert.Equal(expectedModName, atomicValues.ElementAt(0));
+            Assert.Equal(expectedReleaseToken, atomicValues.ElementAt(1));
         }
         #endregion
-
-        public static IEnumerable<object[]> ToReleaseDownloadUrlOperatorData =>
-            new List<object[]>
-            {
-                new object[] {"/download/TestMod/1234567890abcd1234567890", ReleaseDownloadUrl.For("/download/TestMod/1234567890abcd1234567890")}
-            };
-
-        public static IEnumerable<object[]> ValidDownloadUrlsWithRandomModName()
-        {
-            String randomModName = GetRandomCharacterString(ReleaseDownloadUrl.ValidModNameCharacters, Mod.NameLength);
-            return new List<object[]>
-            {
-                new object[] { new String("/download/" + randomModName + "/1234567890abcd1234567890"), randomModName}
-            };
-        }
-
-        public static IEnumerable<object[]> ValidDownloadUrlsWithRandomReleaseToken()
-        {
-            String randomReleaseToken = GetRandomCharacterString(ReleaseDownloadUrl.ValidReleaseTokenCharacters, ReleaseDownloadUrl.ReleaseTokenLength);
-            return new List<object[]>
-            {
-                new object[] { new String("/download/TestMod/" + randomReleaseToken), randomReleaseToken}
-            };
-        }
-
-        public static IEnumerable<object[]> DownloadUrlsWithModNameTooLong =>
-            new List<object[]>
-            {
-                new object[] {
-                    new String("/download/" + GetRandomCharacterString(ReleaseDownloadUrl.ValidModNameCharacters, Mod.NameLength + 1) + "/1234567890abcd1234567890")
-                },
-                new object[] {
-                    new String("/download/" + GetRandomCharacterString(ReleaseDownloadUrl.ValidModNameCharacters, Mod.NameLength + 100) + "/1234567890abcd1234567890")
-                }
-            };
-
-        public static IEnumerable<object[]> DownloadUrlsWithReleaseTokenTooLong =>
-            new List<object[]>
-            {
-                new object[] {
-                    new String("/download/TestMod/" + GetRandomCharacterString(ReleaseDownloadUrl.ValidReleaseTokenCharacters, ReleaseDownloadUrl.ReleaseTokenLength + 1))
-                },
-                new object[] {
-                    new String("/download/TestMod/" + GetRandomCharacterString(ReleaseDownloadUrl.ValidReleaseTokenCharacters, ReleaseDownloadUrl.ReleaseTokenLength + 100))
-                }
-            };
-
-        public static IEnumerable<object[]> Equals_InvalidTypesData =>
-            new List<object[]>
-            {
-                new object[] {14},
-                new object[] {"String"},
-                new object[] {Guid.NewGuid()}
-            };
-
-        private static String GetRandomCharacterString(String characterSet, Int32 length)
-        {
-            return new String(Enumerable.Repeat(characterSet, length).Select(s => s[Random.Next(s.Length)]).ToArray());
-        }
     }
 }
