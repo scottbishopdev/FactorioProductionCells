@@ -1,13 +1,22 @@
 using System;
 using FactorioProductionCells.Domain.Enums;
+using FactorioProductionCells.Domain.Validators;
 
 namespace FactorioProductionCells.Domain.Entities
 {
-    public class DependencyComparisonType
+    public class DependencyComparisonType : IEquatable<DependencyComparisonType>
     {
         public const Int32 NameLength = 25;
         
         private DependencyComparisonType() {}
+
+        public DependencyComparisonType(DependencyComparisonType original)
+        {
+            ObjectValidator.ValidateRequiredObject(original, nameof(original));
+            
+            this.Id = original.Id;
+            this.Name = original.Name;
+        }
 
         public DependencyComparisonType(DependencyComparisonTypeId enumId)
         {
@@ -25,20 +34,22 @@ namespace FactorioProductionCells.Domain.Entities
 
         public static DependencyComparisonType For(String dependencyComparisonTypeString)
         {
-            dependencyComparisonTypeString = dependencyComparisonTypeString?.Trim();
-
+            StringValidator.ValidateRequiredString(dependencyComparisonTypeString, nameof(dependencyComparisonTypeString));
+            
             switch (dependencyComparisonTypeString)
             {
                 case ">":
                     return new DependencyComparisonType(DependencyComparisonTypeId.GreaterThan);
                 case ">=":
                     return new DependencyComparisonType(DependencyComparisonTypeId.GreaterThanOrEqualTo);
-                case "=":
-                    return new DependencyComparisonType(DependencyComparisonTypeId.EqualTo);
                 case "<":
                     return new DependencyComparisonType(DependencyComparisonTypeId.LessThan);
                 case "<=":
                     return new DependencyComparisonType(DependencyComparisonTypeId.LessThanOrEqualTo);
+                case "=":
+                    return new DependencyComparisonType(DependencyComparisonTypeId.EqualTo);
+                case "!=":
+                    return new DependencyComparisonType(DependencyComparisonTypeId.NotEqualTo);
                 default:
                     throw new ArgumentException($"The specified string \"{dependencyComparisonTypeString}\" could not be parsed into a valid DependencyComparisonType.", "dependencyComparisonTypeString");
             }
@@ -55,15 +66,24 @@ namespace FactorioProductionCells.Domain.Entities
                     return ">";
                 case DependencyComparisonTypeId.GreaterThanOrEqualTo:
                     return ">=";
-                case DependencyComparisonTypeId.EqualTo:
-                    return "=";
                 case DependencyComparisonTypeId.LessThan:
                     return "<";
                 case DependencyComparisonTypeId.LessThanOrEqualTo:
                     return "<=";
+                case DependencyComparisonTypeId.EqualTo:
+                    return "=";
+                case DependencyComparisonTypeId.NotEqualTo:
+                    return "!=";
                 default:
                     return "";
             }
+        }
+
+        public Boolean Equals(DependencyComparisonType right)
+        {
+            return right != null
+                && this.Id == right.Id
+                && ((this.Name == null && right.Name == null) || this.Name == right.Name);
         }
     }
 }

@@ -1,0 +1,36 @@
+name: Tests and Code Coverage
+
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+        branches: [ master ]
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v1
+              with:
+                dotnet-version: 3.1.301
+
+            - name: Install dependencies
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build --configuration Release --no-restore
+
+            - name: Unit Tests
+              run: dotnet test --no-restore /maxcpucount:1
+
+            - name: Upload Unit Test Coverage Reports to Codecov
+              uses: codecov/codecov-action@v1
+              with:
+                token: ${{ secrets.CODECOV_TOKEN }}
+                files: ./Tests/TestResults/Domain.UnitTests.xml,./Tests/TestResults/Application.UnitTests.xml,./Tests/TestResults/Infrastructure.UnitTests.xml,./Tests/TestResults/ModUpdateScheduler.UnitTests.xml
+                flags: UnitTests
+                fail_ci_if_error: true

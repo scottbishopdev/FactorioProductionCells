@@ -6,6 +6,15 @@
     <a href="https://www.gnu.org/licenses/gpl-3.0">
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg">
     </a>
+    <a href="https://github.com/sbishop411/FactorioProductionCells/actions">
+        <img alt="Actions Status" src="https://github.com/sbishop411/FactorioProductionCells/workflows/Build/badge.svg">
+    </a>
+    <a href="https://github.com/sbishop411/FactorioProductionCells/actions">
+        <img alt="Actions Status" src="https://github.com/sbishop411/FactorioProductionCells/workflows/Tests%20and%20Code%20Coverage/badge.svg">
+    </a>
+    <a href="https://codecov.io/gh/sbishop411/FactorioProductionCells">
+        <img src="https://codecov.io/gh/sbishop411/FactorioProductionCells/branch/master/graph/badge.svg" />
+    </a>
 </p>
 
 Factorio Production Cells (the name's a work in progress...) is a website intended to help Factorio players plan out their bases by allowing them to quickly and easily create "production cells" - groups of recipes and the machines they're produced in - that are intended to be implemented as a single unit within the game. Production cells allow players to focus on just the inputs and outputs of a production process by abstracting away intermediate materials and processes, which in turn allows them to spend more time designing their base and less time worrying about exact production ratios.

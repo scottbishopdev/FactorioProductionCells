@@ -1,42 +1,74 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Domain.ValueObjects;
+using FactorioProductionCells.TestData.Domain.ValueObjects;
+using FactorioProductionCells.TestData.Common;
 
 namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
 {
     public class ReleaseFileNameTests
     {
-        internal static ReleaseFileName OnePointFourPointSixteenReleaseFileName = ReleaseFileName.For("Test Mod_1.4.16.zip");
-        internal static ReleaseFileName OnePointFivePointOneReleaseFileName = ReleaseFileName.For("Test Mod_1.5.1.zip");
-        internal static ReleaseFileName OnePointFourPointSixteenCloneReleaseFileName = ReleaseFileName.For("Test Mod_1.4.16.zip");
-        internal static ReleaseFileName NotATestModReleaseFileName = ReleaseFileName.For("NotATestMod_2.5.17.zip");
-        private static List<Int32> integerValues = new List<Int32> { 0, 1, 2, Int32.MaxValue };
-        private static Random Random = new Random();
-      
-        #region For
+        #region Copy Constructor
         [Theory]
-        [InlineData("TestMod_1.4.16.zip", "TestMod")]
-        [InlineData(" TestMod_1.4.16.zip    ", "TestMod")]
-        [InlineData("TestMod_1.4.16.zipTestMod_1.4.16.zip", "TestMod_1.4.16.zipTestMod")]
-        [MemberData(nameof(ValidReleaseFileNameWithRandomModName))]
-        public void For_WhenGivenValidString_ReturnsCorrectModName(String releaseFileNameString, String modName)
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticReleaseFileNamesWithModName), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomReleaseFileNamesWithModName), MemberType=typeof(ReleaseFileNameTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectModName(ReleaseFileName releaseFileName, String expectedModName)
         {
-            var releaseFileName = ReleaseFileName.For(releaseFileNameString);
-            // TODO: For some reason this test is still inconsistent, probably due to whitespace trimming?
-            Assert.Equal(modName.Trim(), releaseFileName.ModName);
+            var testReleaseFileName = new ReleaseFileName(releaseFileName);
+            Assert.Equal(expectedModName, testReleaseFileName.ModName);
         }
 
         [Theory]
-        [InlineData("TestMod_1.4.16.zip", "1.4.16")]
-        [InlineData(" TestMod_1.4.16.zip    ", "1.4.16")]
-        [MemberData(nameof(ValidReleaseFileNamesWithRandomModVersion))]
-        public void For_WhenGivenValidString_ReturnsCorrectModVersion(String releaseFileNameString, String modVersionString)
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticReleaseFileNamesWithModVersion), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomReleaseFileNamesWithModVersion), MemberType=typeof(ReleaseFileNameTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectModVersion(ReleaseFileName releaseFileName, ModVersion expectedModVersion)
+        {
+            var testReleaseFileName = new ReleaseFileName(releaseFileName);
+            Assert.Equal(expectedModVersion, testReleaseFileName.ModVersion);
+        }
+
+        [Fact]
+        public void CopyConstructor_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new ReleaseFileName(original: null));
+            Assert.Equal("original is required. (Parameter 'original')", exception.Message);
+        }
+        #endregion
+        
+        #region For
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticStringsWithModName), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomStringsWithModName), MemberType=typeof(ReleaseFileNameTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectModName(String releaseFileNameString, String modName)
         {
             var releaseFileName = ReleaseFileName.For(releaseFileNameString);
-            Assert.Equal(ModVersion.For(modVersionString), releaseFileName.ModVersion);
+            Assert.Equal(modName, releaseFileName.ModName);
+        }
+
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticStringsWithModVersion), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomStringsWithModVersion), MemberType=typeof(ReleaseFileNameTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectModVersion(String releaseFileNameString, ModVersion modVersion)
+        {
+            var releaseFileName = ReleaseFileName.For(releaseFileNameString);
+            Assert.Equal(modVersion, releaseFileName.ModVersion);
+        }
+
+        [Fact]
+        public void For_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => ReleaseFileName.For(null));
+            Assert.Equal("releaseFileNameString is required. (Parameter 'releaseFileNameString')", exception.Message);
+        }
+
+        [Theory]
+        [MemberData(nameof(CommonTestData.EmptyAndWhitespaceStrings), MemberType=typeof(CommonTestData))]
+        public void For_WhenGivenEmptyStringOrWhitespace_ThrowsArgumentException(String releaseFileNameString)
+        {
+            var exception = Assert.Throws<ArgumentException>(() => ReleaseFileName.For(releaseFileNameString));
+            Assert.Equal($"releaseFileNameString may not be empty. (Parameter 'releaseFileNameString')", exception.Message);
         }
 
         [Theory]
@@ -49,7 +81,6 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         [InlineData("TestMod__.4.16.zip")]
         [InlineData("TestMod_1.a.16.zip")]
         [InlineData("TestMod_1.4...zip")]
-        [InlineData("")]
         [InlineData("What're you going to do, bleed on me?   I'm *INVINCIBLE*!!!")]
         public void For_WhenGivenInvalidFormat_ThrowsArgumentException(String releaseFileNameString)
         {
@@ -57,15 +88,8 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
             Assert.Equal($"Unable to parse \"{releaseFileNameString}\" to a valid ReleaseFileName due to formatting. (Parameter 'releaseFileNameString')", exception.Message);
         }
 
-        [Fact]
-        public void For_WhenGivenNull_ThrowsArgumentNullException()
-        {
-            var exception = Assert.Throws<ArgumentNullException>(() => ReleaseFileName.For(null));
-            Assert.Equal("A value for the release file name must be provided. (Parameter 'releaseFileNameString')", exception.Message);
-        }
-
         [Theory]
-        [MemberData(nameof(ReleaseFileNamesWithModNameTooLong))]
+        [MemberData(nameof(ReleaseFileNameTestData.RandomReleaseFileNamesWithModNameTooLong), parameters: 3, MemberType=typeof(ReleaseFileNameTestData))]
         public void For_WhenGivenModNameTooLong_ThrowsArgumentException(String releaseFileNameString)
         {
             var exception = Assert.Throws<ArgumentException>(() => ReleaseFileName.For(releaseFileNameString));
@@ -74,18 +98,21 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         #endregion
 
         #region ToStringOperator
-        [Fact]
-        public void ToStringOperator_WhenGivenReleaseFileName_ReturnsCorrectString()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticReleaseFileNamesFromForWithStrings), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomReleaseFileNamesFromForWithStrings), MemberType=typeof(ReleaseFileNameTestData))]
+        public void ToStringOperator_WhenGivenReleaseFileName_ReturnsCorrectString(ReleaseFileName releaseFileName, String expected)
         {
-            String testModString = OnePointFourPointSixteenReleaseFileName;
-            Assert.Equal("Test Mod_1.4.16.zip", testModString);
+            String releaseFileNameString = releaseFileName;
+            Assert.Equal(expected, releaseFileNameString);
         }
         #endregion
 
         #region ToReleaseFileNameOperator
         [Theory]
-        [MemberData(nameof(ToReleaseFileNameOperatorData))]
-        public void ToReleaseFileNameOperator_WhenGivenString_ReturnsCorrectReleaseFileName(String releaseFileNameString, ReleaseFileName releaseFileName)
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticReleaseFileNamesFromForWithStrings), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomReleaseFileNamesFromForWithStrings), MemberType=typeof(ReleaseFileNameTestData))]
+        public void ToReleaseFileNameOperator_WhenGivenString_ReturnsCorrectReleaseFileName(ReleaseFileName releaseFileName, String releaseFileNameString)
         {
             ReleaseFileName newReleaseFileName = (ReleaseFileName)releaseFileNameString;
             Assert.Equal(releaseFileName, newReleaseFileName);
@@ -93,130 +120,101 @@ namespace FactorioProductionCells.Domain.UnitTests.ValueObjects
         #endregion
 
         #region Equals
-        [Fact]
-        public void Equals_WhenProvidedEqualReleaseFileNames_ReturnsTrue()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void Equals_WhenProvidedEqualReleaseFileNames_ReturnsTrue(ReleaseFileName left, ReleaseFileName right)
         {
-            Assert.True(OnePointFourPointSixteenReleaseFileName.Equals((Object)OnePointFourPointSixteenCloneReleaseFileName));
+            Assert.True(left.Equals((Object)right));
         }
 
-        [Fact]
-        public void Equals_WhenProvidedNotEqualReleaseFileNames_ReturnsFalse()
-        {
-            Assert.False(OnePointFourPointSixteenReleaseFileName.Equals((Object)NotATestModReleaseFileName));
-        }
-        
         [Theory]
-        [MemberData(nameof(Equals_InvalidTypesData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticNonEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void Equals_WhenProvidedNotEqualReleaseFileNames_ReturnsFalse(ReleaseFileName left, ReleaseFileName right)
+        {
+            Assert.False(left.Equals((Object)right));
+        }
+
+        [Theory]
+        [MemberData(nameof(CommonTestData.VariousValueTypeData), MemberType=typeof(CommonTestData))]
         public void Equals_WhenProvidedDifferentType_ThrowsArgumentException(Object right)
         {
-            var exception = Assert.Throws<ArgumentException>(() => OnePointFourPointSixteenReleaseFileName.Equals(right));
+            var exception = Assert.Throws<ArgumentException>(() => ReleaseFileNameTestData.TestModAlphaReleaseFileName.Equals(right));
             Assert.Equal("Unable to compare the specified object to a ReleaseFileName. (Parameter 'obj')", exception.Message);
         }
         #endregion
 
         #region GetHashCode
-        [Fact]
-        public void GetHashCode_MatchingReleaseFileNames_ReturnSameHashCode()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void GetHashCode_MatchingReleaseFileNames_ReturnSameHashCode(ReleaseFileName left, ReleaseFileName right)
         {
-            Assert.Equal(OnePointFourPointSixteenReleaseFileName.GetHashCode(), OnePointFourPointSixteenCloneReleaseFileName.GetHashCode());
+            Assert.Equal(left.GetHashCode(), right.GetHashCode());
         }
 
-        [Fact]
-        public void GetHashCode_NonMatchingReleaseFileNames_ReturnDifferentHashCode()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticNonEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void GetHashCode_NonMatchingReleaseFileNames_ReturnDifferentHashCode(ReleaseFileName left, ReleaseFileName right)
         {
-            Assert.NotEqual(OnePointFourPointSixteenReleaseFileName.GetHashCode(), NotATestModReleaseFileName.GetHashCode());
+            Assert.NotEqual(left.GetHashCode(), right.GetHashCode());
         }
         #endregion
 
         #region EqualsOperator
-        [Fact]
-        public void EqualsOperator_WhenGivenMatchingReleaseFileNames_ReturnsTrue()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void EqualsOperator_WhenGivenMatchingReleaseFileNames_ReturnsTrue(ReleaseFileName left, ReleaseFileName right)
         {
-            Assert.True(OnePointFourPointSixteenReleaseFileName == OnePointFourPointSixteenCloneReleaseFileName);
+            Assert.True(left == right);
         }
 
-        [Fact]
-        public void EqualsOperator_WhenGivenNotMatchingReleaseFileNames_ReturnsFalse()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticNonEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void EqualsOperator_WhenGivenNotMatchingReleaseFileNames_ReturnsFalse(ReleaseFileName left, ReleaseFileName right)
         {
-            Assert.False(OnePointFourPointSixteenReleaseFileName == NotATestModReleaseFileName);
+            Assert.False(left == right);
         }
         #endregion
 
         #region NotEqualsOperator
-        [Fact]
-        public void NotEqualsOperator_WhenGivenNotMatchingReleaseFileNames_ReturnsTrue()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticNonEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void NotEqualsOperator_WhenGivenNotMatchingReleaseFileNames_ReturnsTrue(ReleaseFileName left, ReleaseFileName right)
         {
-            Assert.True(OnePointFourPointSixteenReleaseFileName != NotATestModReleaseFileName);
+            Assert.True(left != right);
         }
-        
-        [Fact]
-        public void NotEqualsOperator_WhenGivenMatchingReleaseFileNames_ReturnsFalse()
+
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomEqualReleaseFileNamePairs), MemberType=typeof(ReleaseFileNameTestData))]
+        public void NotEqualsOperator_WhenGivenMatchingReleaseFileNames_ReturnsFalse(ReleaseFileName left, ReleaseFileName right)
         {
-            Assert.False(OnePointFourPointSixteenReleaseFileName != OnePointFourPointSixteenCloneReleaseFileName);
+            Assert.False(left != right);
         }
         #endregion
 
         #region ToString
-        [Fact]
-        public void ToString_WhenGivenReleaseFileName_ReturnsCorrectString()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticReleaseFileNamesFromForWithStrings), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomReleaseFileNamesFromForWithStrings), MemberType=typeof(ReleaseFileNameTestData))]
+        public void ToString_WhenGivenReleaseFileName_ReturnsCorrectString(ReleaseFileName releaseFileName, String expected)
         {
-            Assert.Equal("Test Mod_1.4.16.zip", OnePointFourPointSixteenReleaseFileName.ToString());
+            Assert.Equal(expected, releaseFileName.ToString());
         }
         #endregion
 
         #region GetAtomicValues
-        [Fact]
-        public void GetAtomicValues_WhenGivenReleaseFileName_ReturnsCorrectValues()
+        [Theory]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidStaticReleaseFileNamesFromForWithModNameAndModVersion), MemberType=typeof(ReleaseFileNameTestData))]
+        [MemberData(nameof(ReleaseFileNameTestData.ValidRandomReleaseFileNamesFromForWithModNameAndModVersion), MemberType=typeof(ReleaseFileNameTestData))]
+        public void GetAtomicValues_WhenGivenReleaseFileName_ReturnsCorrectValues(ReleaseFileName releaseFileName, String expectedModName, ModVersion expectedModVersion)
         {
-            var atomicValues = OnePointFourPointSixteenReleaseFileName.GetAtomicValues();
-            Assert.Equal("Test Mod", atomicValues.ElementAt(0));
-            Assert.Equal(ModVersion.For("1.4.16"), atomicValues.ElementAt(1));
+            var atomicValues = releaseFileName.GetAtomicValues();
+            Assert.Equal(expectedModName, atomicValues.ElementAt(0));
+            Assert.Equal(expectedModVersion, atomicValues.ElementAt(1));
         }
         #endregion
-
-        public static IEnumerable<object[]> ValidReleaseFileNameWithRandomModName()
-        {
-            String randomModName = GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters, Mod.NameLength);
-            return new List<object[]>
-            {
-                new object[] { new String(randomModName + "_1.4.16.zip"), randomModName}
-            };
-        }
-
-        public static IEnumerable<object[]> ValidReleaseFileNamesWithRandomModVersion =>
-            from leftMajor in integerValues
-            from leftMinor in integerValues
-            from leftPatch in integerValues
-            select new object[] { $"TestMod_{leftMajor.ToString()}.{leftMinor.ToString()}.{leftPatch.ToString()}.zip", $"{leftMajor.ToString()}.{leftMinor.ToString()}.{leftPatch.ToString()}" };
-
-        public static IEnumerable<object[]> ReleaseFileNamesWithModNameTooLong =>
-            new List<object[]>
-            {
-                new object[] {
-                    new String(GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters.Replace(" ", ""), Mod.NameLength + 1) + "_1.4.16.zip")
-                },
-                new object[] {
-                    new String(GetRandomCharacterString(ReleaseFileName.ValidModNameCharacters.Replace(" ", ""), Mod.NameLength + 100) + "_1.4.16.zip")
-                }
-            };
-
-        public static IEnumerable<object[]> ToReleaseFileNameOperatorData =>
-            new List<object[]>
-            {
-                new object[] {"TestMod_1.4.16.zip", ReleaseFileName.For("TestMod_1.4.16.zip")}
-            };
-
-        public static IEnumerable<object[]> Equals_InvalidTypesData =>
-            new List<object[]>
-            {
-                new object[] {14},
-                new object[] {"String"},
-                new object[] {Guid.NewGuid()}
-            };
-
-        private static String GetRandomCharacterString(String characterSet, Int32 length)
-        {
-            return new String(Enumerable.Repeat(characterSet, length).Select(s => s[Random.Next(s.Length)]).ToArray());
-        }
     }
 }

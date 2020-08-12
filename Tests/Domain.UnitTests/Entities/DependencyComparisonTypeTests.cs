@@ -2,65 +2,76 @@ using System;
 using Xunit;
 using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Domain.Enums;
+using FactorioProductionCells.TestData.Common;
+using FactorioProductionCells.TestData.Domain.Entities;
 
 namespace FactorioProductionCells.Domain.UnitTests.Entities
 {
     public class DependencyComparisonTypeTests
     {
-        #region EnumConstructor
+        #region Copy Constructor
         [Theory]
-        [InlineData(DependencyComparisonTypeId.LessThan, DependencyComparisonTypeId.LessThan)]
-        [InlineData(DependencyComparisonTypeId.LessThanOrEqualTo, DependencyComparisonTypeId.LessThanOrEqualTo)]
-        [InlineData(DependencyComparisonTypeId.EqualTo, DependencyComparisonTypeId.EqualTo)]
-        [InlineData(DependencyComparisonTypeId.GreaterThan, DependencyComparisonTypeId.GreaterThan)]
-        [InlineData(DependencyComparisonTypeId.GreaterThanOrEqualTo, DependencyComparisonTypeId.GreaterThanOrEqualTo)]
-        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectEnum(DependencyComparisonTypeId enumId, DependencyComparisonTypeId type)
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticDependencyComparisonTypesWithId), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectId(DependencyComparisonType dependencyType, DependencyComparisonTypeId expectedDependencyComparisonTypeId)
         {
-            var dependencyComparisonType = new DependencyComparisonType(enumId);
-            Assert.Equal(type, dependencyComparisonType.Id);
+            var testDependencyComparisonType = new DependencyComparisonType(dependencyType);
+            Assert.Equal(expectedDependencyComparisonTypeId, testDependencyComparisonType.Id);
         }
-        
+
         [Theory]
-        [InlineData(DependencyComparisonTypeId.LessThan, "LessThan")]
-        [InlineData(DependencyComparisonTypeId.LessThanOrEqualTo, "LessThanOrEqualTo")]
-        [InlineData(DependencyComparisonTypeId.EqualTo, "EqualTo")]
-        [InlineData(DependencyComparisonTypeId.GreaterThan, "GreaterThan")]
-        [InlineData(DependencyComparisonTypeId.GreaterThanOrEqualTo, "GreaterThanOrEqualTo")]
-        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectName(DependencyComparisonTypeId enumId, String name)
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticDependencyComparisonTypesWithName), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectName(DependencyComparisonType dependencyType, String expectedName)
         {
-            var dependencyComparisonType = new DependencyComparisonType(enumId);
-            Assert.Equal(name, dependencyComparisonType.Name);
+            var testDependencyComparisonType = new DependencyComparisonType(dependencyType);
+            Assert.Equal(expectedName, testDependencyComparisonType.Name);
+        }
+
+        [Fact]
+        public void CopyConstructor_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new Dependency(original: null));
+            Assert.Equal("original is required. (Parameter 'original')", exception.Message);
         }
         #endregion
 
-        #region IntConstructor
+        #region Enum Constructor
         [Theory]
-        [InlineData(0, DependencyComparisonTypeId.LessThan)]
-        [InlineData(1, DependencyComparisonTypeId.LessThanOrEqualTo)]
-        [InlineData(2, DependencyComparisonTypeId.EqualTo)]
-        [InlineData(3, DependencyComparisonTypeId.GreaterThan)]
-        [InlineData(4, DependencyComparisonTypeId.GreaterThanOrEqualTo)]
-        public void IntConstructor_WhenGivenValidId_ReturnsCorrectEnum(int intId, DependencyComparisonTypeId type)
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticDependencyComparisonTypeIdsWithEnumValues), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectId(DependencyComparisonTypeId enumId, DependencyComparisonTypeId expectedEnumId)
         {
-            var dependencyComparisonType = new DependencyComparisonType(intId);
-            Assert.Equal(type, dependencyComparisonType.Id);
+            var testDependencyComparisonType = new DependencyComparisonType(enumId);
+            Assert.Equal(expectedEnumId, testDependencyComparisonType.Id);
         }
 
         [Theory]
-        [InlineData(0, "LessThan")]
-        [InlineData(1, "LessThanOrEqualTo")]
-        [InlineData(2, "EqualTo")]
-        [InlineData(3, "GreaterThan")]
-        [InlineData(4, "GreaterThanOrEqualTo")]
-        public void IntConstructor_WhenGivenValidId_ReturnsCorrectName(int intId, String name)
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticDependencyComparisonTypeIdsWithNames), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectName(DependencyComparisonTypeId enumId, String expectedName)
         {
-            var dependencyComparisonType = new DependencyComparisonType(intId);
-            Assert.Equal(name, dependencyComparisonType.Name);
+            var testDependencyComparisonType = new DependencyComparisonType(enumId);
+            Assert.Equal(expectedName, testDependencyComparisonType.Name);
+        }
+        #endregion
+
+        #region Int Constructor
+        [Theory]
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticDependencyComparisonTypeIntIdsWithIds), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void IntConstructor_WhenGivenValidInt_ReturnsCorrectId(Int32 intId, DependencyComparisonTypeId expectedId)
+        {
+            var testDependencyComparisonType = new DependencyComparisonType(intId);
+            Assert.Equal(expectedId, testDependencyComparisonType.Id);
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticDependencyComparisonTypeIntIdsWithNames), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void IntConstructor_WhenGivenValidInt_ReturnsCorrectName(Int32 intId, String expectedName)
+        {
+            var testDependencyComparisonType = new DependencyComparisonType(intId);
+            Assert.Equal(expectedName, testDependencyComparisonType.Name);
         }
 
         [Theory]
         [InlineData(-1)]
-        [InlineData(5)]
+        [InlineData(6)]
         [InlineData(int.MaxValue)]
         [InlineData(int.MinValue)]
         public void IntConstructor_WhenGivenInvalidId_ThrowsArgumentOutOfRangeException(int intId)
@@ -72,56 +83,77 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         
         #region For
         [Theory]
-        [InlineData("<", DependencyComparisonTypeId.LessThan)]
-        [InlineData("<=", DependencyComparisonTypeId.LessThanOrEqualTo)]
-        [InlineData("=", DependencyComparisonTypeId.EqualTo)]
-        [InlineData(">", DependencyComparisonTypeId.GreaterThan)]
-        [InlineData(">=", DependencyComparisonTypeId.GreaterThanOrEqualTo)]
-        [InlineData(" >=    ", DependencyComparisonTypeId.GreaterThanOrEqualTo)]
-        public void For_WhenGivenValidString_ReturnsCorrectEnum(String dependencyComparisonTypeString, DependencyComparisonTypeId type)
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticStringsWithEnumValue), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectId(String dependencyComparisonTypeString, DependencyComparisonTypeId expectedId)
         {
-            var dependencyComparisonType = DependencyComparisonType.For(dependencyComparisonTypeString);
-            Assert.Equal(type, dependencyComparisonType.Id);
+            var testDependencyComparisonType = DependencyComparisonType.For(dependencyComparisonTypeString);
+            Assert.Equal(expectedId, testDependencyComparisonType.Id);
         }
 
         [Theory]
-        [InlineData("<", "LessThan")]
-        [InlineData("<=", "LessThanOrEqualTo")]
-        [InlineData("=", "EqualTo")]
-        [InlineData(">", "GreaterThan")]
-        [InlineData(">=", "GreaterThanOrEqualTo")]
-        [InlineData(" >=    ", "GreaterThanOrEqualTo")]
-        public void For_WhenGivenValidString_ReturnsCorrectName(String dependencyComparisonTypeString, String name)
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticStringsWithEnumName), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectName(String dependencyComparisonTypeString, String expectedName)
         {
-            var dependencyComparisonType = DependencyComparisonType.For(dependencyComparisonTypeString);
-            Assert.Equal(name, dependencyComparisonType.Name);
+            var testDependencyComparisonType = DependencyComparisonType.For(dependencyComparisonTypeString);
+            Assert.Equal(expectedName, testDependencyComparisonType.Name);
         }
-        
+
+        [Fact]
+        public void For_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => DependencyComparisonType.For(null));
+            Assert.Equal("dependencyComparisonTypeString is required. (Parameter 'dependencyComparisonTypeString')", exception.Message);
+        }
+
+        [Theory]
+        [MemberData(nameof(CommonTestData.EmptyAndWhitespaceStrings), MemberType=typeof(CommonTestData))]
+        public void For_WhenGivenEmptyStringOrWhitespace_ThrowsArgumentException(String dependencyComparisonTypeString)
+        {
+            var exception = Assert.Throws<ArgumentException>(() => DependencyComparisonType.For(dependencyComparisonTypeString));
+            Assert.Equal($"dependencyComparisonTypeString may not be empty. (Parameter 'dependencyComparisonTypeString')", exception.Message);
+        }
+
         [Theory]
         [InlineData("?")]
-        [InlineData("!=")]
-        [InlineData("")]
         [InlineData("Hes passed on! This parrot is no more! He has ceased to be!")]
-        [InlineData("   `/*")]
-        [InlineData(null)]
+        [InlineData("`/*")]
         public void For_WhenGivenInvalidString_ThrowsArgumentException(String dependencyComparisonTypeString)
         {
             var exception = Assert.Throws<ArgumentException>(() => DependencyComparisonType.For(dependencyComparisonTypeString));
-            Assert.Equal($"The specified string \"{dependencyComparisonTypeString?.Trim()}\" could not be parsed into a valid DependencyComparisonType. (Parameter 'dependencyComparisonTypeString')", exception.Message);
+            Assert.Equal($"The specified string \"{dependencyComparisonTypeString}\" could not be parsed into a valid DependencyComparisonType. (Parameter 'dependencyComparisonTypeString')", exception.Message);
         }
         #endregion
 
         #region ToString
         [Theory]
-        [InlineData(DependencyComparisonTypeId.LessThan, "<")]
-        [InlineData(DependencyComparisonTypeId.LessThanOrEqualTo, "<=")]
-        [InlineData(DependencyComparisonTypeId.EqualTo, "=")]
-        [InlineData(DependencyComparisonTypeId.GreaterThan, ">")]
-        [InlineData(DependencyComparisonTypeId.GreaterThanOrEqualTo, ">=")]
-        public void ToString_WhenGivenEnumId_ReturnsCorrectString(DependencyComparisonTypeId enumId, String dependencyComparisonTypeString)
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticDependencyComparisonTypesFromForWithStrings), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void ToString_WhenGivenEnumId_ReturnsCorrectString(DependencyComparisonType dependencyComparisonType, String expectedString)
         {
-            var dependencyComparisonType = new DependencyComparisonType(enumId);
-            Assert.Equal(dependencyComparisonTypeString, dependencyComparisonType.ToString());
+            Assert.Equal(expectedString, dependencyComparisonType.ToString());
+        }
+        #endregion
+
+        #region Equals
+
+        [Theory]
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticEqualDependencyComparisonTypePairs), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void Equals_WhenProvidedEqualDependencyComparisonTypes_ReturnsTrue(DependencyComparisonType left, DependencyComparisonType right)
+        {
+            Assert.True(left.Equals(right));
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyComparisonTypeTestData.ValidStaticNonEqualDependencyComparisonTypePairs), MemberType=typeof(DependencyComparisonTypeTestData))]
+        public void Equals_WhenProvidedNotEqualDependencyComparisonTypes_ReturnsFalse(DependencyComparisonType left, DependencyComparisonType right)
+        {
+            Assert.False(left.Equals(right));
+        }
+
+        [Fact]
+        public void Equals_WhenGivenNull_ReturnsFalse()
+        {
+            var greaterThan = new DependencyComparisonType(DependencyComparisonTypeId.GreaterThan);
+            Assert.False(greaterThan.Equals(null));
         }
         #endregion
     }

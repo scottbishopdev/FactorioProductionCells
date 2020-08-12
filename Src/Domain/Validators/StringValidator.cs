@@ -8,7 +8,7 @@ namespace FactorioProductionCells.Domain.Validators
         {
             ObjectValidator.ValidateRequiredObject(value, propertyName);
             if (String.IsNullOrEmpty(value)) throw new ArgumentException($"{propertyName} may not be empty.", propertyName);
-            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException($"{propertyName} may not be whitespace.", propertyName);
+            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentException($"{propertyName} may not be empty.", propertyName);
         }
 
         public static void ValidateStringMaxLength(String value, String propertyName, Int32 maxLength)

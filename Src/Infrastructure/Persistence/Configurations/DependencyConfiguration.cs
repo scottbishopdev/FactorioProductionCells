@@ -9,14 +9,14 @@ namespace FactorioProductionCells.Infrastructure.Persistence.Configurations
         {
             // Primary Key
             builder.HasKey(d => new {d.ReleaseId, d.DependentModId});
-            
+
             // Columns
-            builder.Property(d => d.ReleaseId).IsRequired();
+            builder.Property(d => d.ReleaseId);
             builder.Property(d => d.DependentModId).IsRequired();
             builder.Property(d => d.DependencyTypeId).HasConversion<int>();
             // TODO: See if a value converter could be used to store a ModId here instead of a mod name.
             builder.Property(d => d.DependentModName).HasMaxLength(Mod.NameLength).IsRequired();
-            builder.Property(d => d.DependencyComparisonTypeId).HasConversion<int>();
+            builder.Property(d => d.DependencyComparisonTypeId).HasConversion<int>().IsRequired(false);
 
             // Value Objects
             // TODO: So, fun fact, it's not actually possible to make the columns for the internal properties of a value object required using ef core!

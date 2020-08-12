@@ -2,56 +2,70 @@ using System;
 using Xunit;
 using FactorioProductionCells.Domain.Entities;
 using FactorioProductionCells.Domain.Enums;
+using FactorioProductionCells.TestData.Domain.Entities;
 
 namespace FactorioProductionCells.Domain.UnitTests.Entities
 {
     public class DependencyTypeTests
     {
-        #region EnumConstructor
+        #region Copy Constructor
         [Theory]
-        [InlineData(DependencyTypeId.Required, DependencyTypeId.Required)]
-        [InlineData(DependencyTypeId.Incompatibility, DependencyTypeId.Incompatibility)]
-        [InlineData(DependencyTypeId.Optional, DependencyTypeId.Optional)]
-        [InlineData(DependencyTypeId.HiddenOptional, DependencyTypeId.HiddenOptional)]
-        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectEnum(DependencyTypeId enumId, DependencyTypeId type)
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticDependencyTypesWithId), MemberType=typeof(DependencyTypeTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectId(DependencyType dependencyType, DependencyTypeId expectedDependencyTypeId)
         {
-            var dependencyType = new DependencyType(enumId);
-            Assert.Equal(type, dependencyType.Id);
+            var testDependencyType = new DependencyType(dependencyType);
+            Assert.Equal(expectedDependencyTypeId, testDependencyType.Id);
         }
-        
+
         [Theory]
-        [InlineData(DependencyTypeId.Required, "Required")]
-        [InlineData(DependencyTypeId.Incompatibility, "Incompatibility")]
-        [InlineData(DependencyTypeId.Optional, "Optional")]
-        [InlineData(DependencyTypeId.HiddenOptional, "HiddenOptional")]
-        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectName(DependencyTypeId enumId, String name)
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticDependencyTypesWithName), MemberType=typeof(DependencyTypeTestData))]
+        public void CopyConstructor_WhenValidParameters_ReturnsCorrectName(DependencyType dependencyType, String expectedName)
         {
-            var dependencyType = new DependencyType(enumId);
-            Assert.Equal(name, dependencyType.Name);
+            var testDependencyType = new DependencyType(dependencyType);
+            Assert.Equal(expectedName, testDependencyType.Name);
+        }
+
+        [Fact]
+        public void CopyConstructor_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => new DependencyType(original: null));
+            Assert.Equal("original is required. (Parameter 'original')", exception.Message);
         }
         #endregion
 
-        #region IntConstructor
+        #region Enum Constructor
         [Theory]
-        [InlineData(0, DependencyTypeId.Required)]
-        [InlineData(1, DependencyTypeId.Incompatibility)]
-        [InlineData(2, DependencyTypeId.Optional)]
-        [InlineData(3, DependencyTypeId.HiddenOptional)]
-        public void IntConstructor_WhenGivenValidId_ReturnsCorrectEnum(int intId, DependencyTypeId type)
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticDependencyTypeIdsWithEnumValues), MemberType=typeof(DependencyTypeTestData))]
+        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectId(DependencyTypeId enumId, DependencyTypeId expectedEnumId)
         {
-            var dependencyType = new DependencyType(intId);
-            Assert.Equal(type, dependencyType.Id);
+            var testDependencyType = new DependencyType(enumId);
+            Assert.Equal(expectedEnumId, testDependencyType.Id);
         }
 
         [Theory]
-        [InlineData(0, "Required")]
-        [InlineData(1, "Incompatibility")]
-        [InlineData(2, "Optional")]
-        [InlineData(3, "HiddenOptional")]
-        public void IntConstructor_WhenGivenValidId_ReturnsCorrectName(int intId, String name)
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticDependencyTypeIdsWithNames), MemberType=typeof(DependencyTypeTestData))]
+        public void EnumConstructor_WhenGivenEnum_ReturnsCorrectName(DependencyTypeId enumId, String expectedName)
         {
-            var dependencyType = new DependencyType(intId);
-            Assert.Equal(name, dependencyType.Name);
+            var testDependencyType = new DependencyType(enumId);
+            Assert.Equal(expectedName, testDependencyType.Name);
+        }
+        #endregion
+
+        #region Int Constructor
+        [Theory]
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticDependencyTypeIntIdsWithIds), MemberType=typeof(DependencyTypeTestData))]
+        public void IntConstructor_WhenGivenValidInt_ReturnsCorrectId(Int32 intId, DependencyTypeId expectedId)
+        {
+            var testDependencyType = new DependencyType(intId);
+            Assert.Equal(expectedId, testDependencyType.Id);
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticDependencyTypeIntIdsWithNames), MemberType=typeof(DependencyTypeTestData))]
+        public void IntConstructor_WhenGivenValidInt_ReturnsCorrectName(Int32 intId, String expectedName)
+        {
+            var testDependencyType = new DependencyType(intId);
+            Assert.Equal(expectedName, testDependencyType.Name);
         }
 
         [Theory]
@@ -68,52 +82,82 @@ namespace FactorioProductionCells.Domain.UnitTests.Entities
         
         #region For
         [Theory]
-        [InlineData("", DependencyTypeId.Required)]
-        [InlineData("!", DependencyTypeId.Incompatibility)]
-        [InlineData("?", DependencyTypeId.Optional)]
-        [InlineData("(?)", DependencyTypeId.HiddenOptional)]
-        [InlineData("   ? ", DependencyTypeId.Optional)]
-        public void For_WhenGivenValidString_ReturnsCorrectEnum(String dependencyTypeString, DependencyTypeId type)
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticStringsWithEnumValue), MemberType=typeof(DependencyTypeTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectId(String dependencyTypeString, DependencyTypeId expectedId)
         {
-            var dependencyType = DependencyType.For(dependencyTypeString);
-            Assert.Equal(type, dependencyType.Id);
+            var testDependencyType = DependencyType.For(dependencyTypeString);
+            Assert.Equal(expectedId, testDependencyType.Id);
         }
 
         [Theory]
-        [InlineData("", "Required")]
-        [InlineData("!", "Incompatibility")]
-        [InlineData("?", "Optional")]
-        [InlineData("(?)", "HiddenOptional")]
-        [InlineData("   ? ", "Optional")]
-        public void For_WhenGivenValidString_ReturnsCorrectName(String dependencyTypeString, String name)
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticStringsWithEnumName), MemberType=typeof(DependencyTypeTestData))]
+        public void For_WhenGivenValidString_ReturnsCorrectName(String dependencyTypeString, String expectedName)
         {
-            var dependencyType = DependencyType.For(dependencyTypeString);
-            Assert.Equal(name, dependencyType.Name);
+            var testDependencyType = DependencyType.For(dependencyTypeString);
+            Assert.Equal(expectedName, testDependencyType.Name);
         }
-        
+
+        [Fact]
+        public void For_WhenGivenNull_ThrowsArgumentNullException()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => DependencyType.For(null));
+            Assert.Equal("dependencyTypeString is required. (Parameter 'dependencyTypeString')", exception.Message);
+        }
+
+        [Theory]
+        [InlineData(" ")]
+        [InlineData("   ")]
+        [InlineData("\r")]
+        [InlineData("\n")]
+        [InlineData("\t")]
+        [InlineData("\v")]
+        public void For_WhenGivenEmptyStringOrWhitespace_ThrowsArgumentException(String dependencyTypeString)
+        {
+            var exception = Assert.Throws<ArgumentException>(() => DependencyType.For(dependencyTypeString));
+            Assert.Equal($"dependencyTypeString may not be whitespace. (Parameter 'dependencyTypeString')", exception.Message);
+        }
+
         [Theory]
         [InlineData(">")]
         [InlineData("(")]
         [InlineData("Hes passed on! This parrot is no more! He has ceased to be!")]
-        [InlineData("   `/*")]
-        [InlineData(null)]
+        [InlineData("`/*")]
         public void For_WhenGivenInvalidString_ThrowsArgumentException(String dependencyTypeString)
         {
             var exception = Assert.Throws<ArgumentException>(() => DependencyType.For(dependencyTypeString));
-            Assert.Equal($"The specified string \"{dependencyTypeString?.Trim()}\" could not be parsed into a valid DependencyType. (Parameter 'dependencyTypeString')", exception.Message);
+            Assert.Equal($"The specified string \"{dependencyTypeString}\" could not be parsed into a valid DependencyType. (Parameter 'dependencyTypeString')", exception.Message);
         }
         #endregion
 
         #region ToString
         [Theory]
-        [InlineData(DependencyTypeId.Required, "")]
-        [InlineData(DependencyTypeId.Incompatibility, "!")]
-        [InlineData(DependencyTypeId.Optional, "?")]
-        [InlineData(DependencyTypeId.HiddenOptional, "(?)")]
-        public void ToString_WhenGivenEnumId_ReturnsCorrectString(DependencyTypeId enumId, String dependencyTypeString)
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticDependencyTypesFromForWithStrings), MemberType=typeof(DependencyTypeTestData))]
+        public void ToString_WhenGivenEnumId_ReturnsCorrectString(DependencyType dependencyType, String expectedString)
         {
-            var dependencyType = new DependencyType(enumId);
-            Assert.Equal(dependencyTypeString, dependencyType.ToString());
+            Assert.Equal(expectedString, dependencyType.ToString());
+        }
+        #endregion
+
+        #region Equals
+        [Theory]
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticEqualDependencyTypePairs), MemberType=typeof(DependencyTypeTestData))]
+        public void Equals_WhenProvidedEqualDependencyTypes_ReturnsTrue(DependencyType left, DependencyType right)
+        {
+            Assert.True(left.Equals(right));
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyTypeTestData.ValidStaticNonEqualDependencyTypePairs), MemberType=typeof(DependencyTypeTestData))]
+        public void Equals_WhenProvidedNotEqualDependencyTypes_ReturnsFalse(DependencyType left, DependencyType right)
+        {
+            Assert.False(left.Equals(right));
+        }
+
+        [Fact]
+        public void Equals_WhenGivenNull_ReturnsFalse()
+        {
+            var hiddenOptional = new DependencyType(DependencyTypeId.HiddenOptional);
+            Assert.False(hiddenOptional.Equals(null));
         }
         #endregion
     }
