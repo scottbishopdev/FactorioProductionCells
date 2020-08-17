@@ -28,7 +28,7 @@ namespace FactorioProductionCells.TestData.Domain.ValueObjects
         public static FactorioVersion ZeroPointEighteen = ZeroPointEighteenTestDataPoint.ObjectFromFor;
 
         public static FactorioVersionTestDataPoint OnePointZeroTestDataPoint = CreateTestDataPointFromProperties(1, 0);
-        public static FactorioVersion OnePointZero = OnePointZeroTestDataPoint.ObjectFromFor; // Just in case they ever get there. :P
+        public static FactorioVersion OnePointZero = OnePointZeroTestDataPoint.ObjectFromFor;
         #endregion
 
         #region Static Test Data Collections
