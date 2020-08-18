@@ -1,7 +1,7 @@
 # FactorioProductionCells
 <p align="center">
-    <a href="https://github.com/sbishop411/FactorioProductionCells/issues">
-        <img src="https://img.shields.io/github/issues/sbishop411/FactorioProductionCells.svg">
+    <a href="https://github.com/sbishop411/FactorioProductionCells/issues?q=is%3Aopen+is%3Aissue+label%3Abug">
+        <img alt="Open bugs" src="https://img.shields.io/github/issues/sbishop411/FactorioProductionCells/bug?color=yellow&label=bugs">
     </a>
     <a href="https://www.gnu.org/licenses/gpl-3.0">
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg">
